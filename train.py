@@ -37,7 +37,7 @@ def get_args_parser():
     # Segmentation parameters
     parser.add_argument(
         "--segmentation",
-        default="felze",
+        default="felz",
         type=str,
         help='segmentation method to use. Options are ["felz", "slic", "quickshift", "watershed"]',
     )
@@ -322,6 +322,14 @@ def get_args_parser():
         help='How to apply mixup/cutmix params. Per "batch", "pair", or "elem"',
     )
 
+    # Distillation parameters
+    parser.add_argument('--teacher-model', default='regnety_160', type=str, metavar='MODEL',
+                        help='Name of teacher model to train (default: "regnety_160"')
+    parser.add_argument('--teacher-path', type=str, default='')
+    parser.add_argument('--distillation-type', default='none', choices=['none', 'soft', 'hard'], type=str, help="")
+    parser.add_argument('--distillation-alpha', default=0.5, type=float, help="")
+    parser.add_argument('--distillation-tau', default=1.0, type=float, help="")
+
     # * Cosub params
     parser.add_argument("--cosub", action="store_true")
 
@@ -390,7 +398,6 @@ def get_args_parser():
     parser.add_argument("--no-pin-mem", action="store_false", dest="pin_mem", help="")
     parser.set_defaults(pin_mem=True)
     return parser
-
 
 def main(args):
     print(args)

@@ -1,0 +1,40 @@
+Namespace(batch_size=256, epochs=300, bce_loss=False, unscale_lr=False, segmentation='felz', grayscale=True, n_points=64, num_tokens=196, model='segvit_tiny', input_size=224, drop=0.0, drop_path=0.1, model_ema=True, model_ema_decay=0.99996, model_ema_force_cpu=False, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.05, sched='cosine', lr=0.0005, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-05, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, color_jitter=0.3, aa='rand-m9-mstd0.5-inc1', smoothing=0.1, train_interpolation='bicubic', repeated_aug=True, train_mode=True, ThreeAugment=False, src=False, reprob=0.25, remode='pixel', recount=1, resplit=False, mixup=0.8, cutmix=1.0, cutmix_minmax=None, mixup_prob=1.0, mixup_switch_prob=0.5, mixup_mode='batch', teacher_model='regnety_160', teacher_path='', distillation_type='none', distillation_alpha=0.5, distillation_tau=1.0, cosub=False, finetune='', attn_only=False, data_path='~/../../data/sb56/data/Imagenet/', data_set='IMNET', inat_category='name', output_dir='outputs/', device='cuda', seed=0, resume='', start_epoch=0, eval=False, eval_crop_ratio=0.875, dist_eval=False, num_workers=10, pin_mem=True)
+number of params: 6212200
+Start training for 300 epochs
+Batch shape is: torch.Size([256, 224, 224, 3])
+Image: 0
+Number of segments: 206.0
+Number of segments: 205
+Number of segments: 204
+Number of segments: 203
+Number of segments: 202
+Number of segments: 201
+Number of segments: 200
+Number of segments: 199
+Number of segments: 198
+Number of segments: 197
+Image: 1
+Traceback (most recent call last):
+  File "/home/sk138/seg_vit/train.py", line 639, in <module>
+    main(args)
+  File "/home/sk138/seg_vit/train.py", line 559, in main
+    train_stats = train_one_epoch(
+                  ^^^^^^^^^^^^^^^^
+  File "/home/sk138/seg_vit/engine.py", line 56, in train_one_epoch
+    outputs = model(samples)
+              ^^^^^^^^^^^^^^
+  File "/home/sk138/miniconda3/envs/general/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1501, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sk138/seg_vit/timm/models/vision_transformer.py", line 552, in forward
+    x = self.forward_features(x)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sk138/seg_vit/timm/models/vision_transformer.py", line 536, in forward_features
+    x = self.patch_embed(x)
+        ^^^^^^^^^^^^^^^^^^^
+  File "/home/sk138/miniconda3/envs/general/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1501, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sk138/seg_vit/timm/models/vision_transformer.py", line 300, in forward
+    num_segs >= num_tokens
+AssertionError: Number of segments in image (158.0) is less than the number of tokens required (196). Please lower the number of tokens or increase segmentation granularity.

@@ -253,6 +253,7 @@ class SegmentEmbed(nn.Module):
         num_tokens=196,
         embed_dim=768,
     ):
+        super().__init__()
         self.segmentation = (
             segmentation  # segmentation method to use from skimage.semgentation
         )
@@ -265,6 +266,8 @@ class SegmentEmbed(nn.Module):
 
     def forward(self, x):
         B, C, H, W = x.shape
+        x = x.permute(0, 2, 3, 1) # Change channels to be last dimension
+        print(f"Batch shape is: {x.shape}")
 
         # Iterate over each image in batch and get segmentation mask
         save_mask = np.zeros((B, H, W))
@@ -276,6 +279,8 @@ class SegmentEmbed(nn.Module):
                     img, scale=100, sigma=0.5, min_size=50
                 )  # TODO: make all parameters set by user
                 save_mask[i, :, :] = segmentation_mask
+            else:
+                raise ValueError(f"segmentation was set to an invalid method")
 
         # Globally consistent number of tokens in image
         if self.num_tokens != None:
@@ -288,29 +293,54 @@ class SegmentEmbed(nn.Module):
         #### Merge segments TODO: Check implementation -- grabed from GPT ####
         for i, img in enumerate(x):
             seg_mask = save_mask[i]
+            print(f"Image: {i}")
+
+            num_segs = np.max(np.unique(seg_mask)) + 1
             assert (
-                seg_mask.shape[0] >= num_tokens
-            ), f"Number of segments in image ({seg_mask.shape[0]}) is less than the number of tokens required ({num_tokens}). Please lower the number of tokens or increase segmentation granularity."
+                num_segs >= num_tokens
+            ), f"Number of segments in image ({num_segs}) is less than the number of tokens required ({num_tokens}). Please lower the number of tokens or increase segmentation granularity."
 
-            while seg_mask.shape[0] > num_tokens:
-                # Find connected components (segments)
-                num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
-                    seg_mask
-                )
+            while num_segs > num_tokens:
+                print(f"Number of segments: {num_segs}")
 
-                # Find the smallest segment
-                min_area_label = np.argmin(stats[1:, cv2.CC_STAT_AREA])
+                # Find smallest segment
+                unique_values, counts = np.unique(seg_mask.flatten(), return_counts=True)
+                smallest_seg = unique_values[np.argmin(counts)]
 
-                # Identify neighboring segments (for simplicity, assuming 8-connectivity)
-                neighbors = cv2.connectedComponents(
-                    np.uint8(seg_mask == min_area_label), connectivity=8
-                )[1]
+                # Find neighbors. Only check for smallest_seg
+                vs_right = np.vstack([seg_mask[:,:-1].ravel(), seg_mask[:,1:].ravel()])
+                vs_below = np.vstack([seg_mask[:-1,:].ravel(), seg_mask[1:,:].ravel()])
+                bneighbors = np.unique(np.hstack([vs_right, vs_below]), axis=1)
 
-                # Choose a neighboring segment to merge with (for simplicity, choosing the first non-background segment)
-                neighbor_to_merge = np.unique(neighbors)[1]
+                include_mask = np.any(bneighbors == smallest_seg, axis=0) # Create a boolean mask indicating columns that include the specific value
+                filtered_bneighbors = bneighbors[:, include_mask] # Extract the columns that include the specific value
 
-                # Merge the smallest segment with the chosen neighboring segment
-                seg_mask[np.where(neighbors == neighbor_to_merge)] = min_area_label
+                # Get unique IDs and remove smallest segment ID
+                filtered_bneighbors = np.unique(filtered_bneighbors.flatten())
+                filtered_bneighbors = filtered_bneighbors[filtered_bneighbors != smallest_seg]
+
+                # Pick a segment and merge
+                merge_seg = np.random.choice(filtered_bneighbors) # randomly pick a segment
+                seg_mask[seg_mask == smallest_seg] = merge_seg # merge them
+
+                # Relabel mask
+                seg_mask = (skimage.segmentation.relabel_sequential(seg_mask.astype(int)))[0]
+
+
+
+                # # Identify neighboring segments (for simplicity, assuming 8-connectivity)
+                # neighbors = cv2.connectedComponents(
+                #     np.uint8(seg_mask == min_area_label), connectivity=8
+                # )[1]
+
+                # # Choose a neighboring segment to merge with (for simplicity, choosing the first non-background segment)
+                # neighbor_to_merge = np.unique(neighbors)[1]
+
+                # # Merge the smallest segment with the chosen neighboring segment
+                # seg_mask[np.where(neighbors == neighbor_to_merge)] = min_area_label
+
+                # Update termination condition
+                num_segs = np.max(np.unique(seg_mask.flatten())) + 1
 
         # Create save tensors based on num_tokens
         seg_out = torch.zeros((B, num_tokens, self.n_points * self.n_points * 2))
@@ -413,6 +443,8 @@ class SegVisionTransformer(nn.Module):
         grayscale=True,
         n_points=64,
         num_tokens=196,
+        img_size=224,
+        in_chans=3,
         num_classes=1000,
         embed_dim=768,
         depth=12,
@@ -473,7 +505,7 @@ class SegVisionTransformer(nn.Module):
             nn.Linear(embed_dim, num_classes) if num_classes > 0 else nn.Identity()
         )
 
-        trunc_normal_(self.pos_embed, std=0.02)
+        # trunc_normal_(self.pos_embed, std=0.02)
         trunc_normal_(self.cls_token, std=0.02)
         self.apply(self._init_weights)
 
