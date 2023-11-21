@@ -276,21 +276,25 @@ class SegmentEmbed(nn.Module):
 
             if self.segmentation == "felz":
                 segmentation_mask = skimage.segmentation.felzenszwalb(
-                    img, scale=100, sigma=0.5, min_size=50
+                    img, scale=50, sigma=0.5, min_size=50
                 )  # TODO: make all parameters set by user
                 save_mask[i, :, :] = segmentation_mask
             else:
                 raise ValueError(f"segmentation was set to an invalid method")
 
         # Globally consistent number of tokens in image
-        if self.num_tokens != None:
+        if self.num_tokens > 0:
+            print("Using global consistency for number of tokens")
             num_tokens = self.num_tokens
         # Batch-consistent number of tokens in image
         else:
-            unique_integers = np.unique(save_mask, axis=0)  # TODO check axis
-            num_tokens = np.max(unique_integers) + 1  # segment-indexes start at 1
+            print("Using batch consistency for number of tokens")
+            # Flatten save_mask. Then find max segment value for each image. Take minimum across all images. Add 1 because of zero-based indexing
+            temp = np.max(save_mask.reshape(save_mask.shape[0], -1), axis=1)
+            num_tokens = np.min(np.max(save_mask.reshape(save_mask.shape[0], -1), axis=1)) + 1  
 
-        #### Merge segments TODO: Check implementation -- grabed from GPT ####
+        print(f"Number of tokens that will be enforced is: {num_tokens}")
+        #### Merge segments to match consistency for batched execution####
         for i, img in enumerate(x):
             seg_mask = save_mask[i]
             print(f"Image: {i}")
@@ -301,8 +305,6 @@ class SegmentEmbed(nn.Module):
             ), f"Number of segments in image ({num_segs}) is less than the number of tokens required ({num_tokens}). Please lower the number of tokens or increase segmentation granularity."
 
             while num_segs > num_tokens:
-                print(f"Number of segments: {num_segs}")
-
                 # Find smallest segment
                 unique_values, counts = np.unique(seg_mask.flatten(), return_counts=True)
                 smallest_seg = unique_values[np.argmin(counts)]
@@ -326,19 +328,6 @@ class SegmentEmbed(nn.Module):
                 # Relabel mask
                 seg_mask = (skimage.segmentation.relabel_sequential(seg_mask.astype(int)))[0]
 
-
-
-                # # Identify neighboring segments (for simplicity, assuming 8-connectivity)
-                # neighbors = cv2.connectedComponents(
-                #     np.uint8(seg_mask == min_area_label), connectivity=8
-                # )[1]
-
-                # # Choose a neighboring segment to merge with (for simplicity, choosing the first non-background segment)
-                # neighbor_to_merge = np.unique(neighbors)[1]
-
-                # # Merge the smallest segment with the chosen neighboring segment
-                # seg_mask[np.where(neighbors == neighbor_to_merge)] = min_area_label
-
                 # Update termination condition
                 num_segs = np.max(np.unique(seg_mask.flatten())) + 1
 
@@ -349,8 +338,8 @@ class SegmentEmbed(nn.Module):
         )  # (height, width), (location x,y), area all from [0, 1] -- NOTE: Assuming static positional embeddings for now
 
         # For each segment in each image
-        for i, unique_mask in enumerate(unique_integers):
-            for unique_int in unique_mask:
+        unique_integers = range(np.max(save_mask))
+        for i, unique_int in enumerate(unique_integers):
                 # TODO: experiment with taking FT of each channel differently vs. only taking grayscale) -- add argument to specify
                 # Get each segment and take FT. Unroll and save
                 binary_mask = (save_mask[i] == unique_int).astype(np.uint8)
@@ -375,18 +364,18 @@ class SegmentEmbed(nn.Module):
                     to_save
                 ).gpu()  # TODO: make this device (how does this work with DataParallel)
 
-            #### TODO: Verify implementation ####
-            # Center
-            seg_mask = save_mask[i]
-            num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
-                seg_mask
-            )  #
-            pos_stats = np.stack(
-                (stats[:, 2:4], centroids)
-            )  # Get width, height, area, and center(x,y)
-            pos_out[i, :] = torch.from_numpy(
-                pos_stats
-            ).gpu()  # TODO: make this device (how does this work with DataParallel)
+                #### TODO: Verify implementation ####
+                # Center
+                seg_mask = save_mask[i]
+                num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
+                    seg_mask
+                )  #
+                pos_stats = np.stack(
+                    (stats[:, 2:4], centroids)
+                )  # Get width, height, area, and center(x,y)
+                pos_out[i, :] = torch.from_numpy(
+                    pos_stats
+                ).gpu()  # TODO: make this device (how does this work with DataParallel)
 
         # Add a linear proj layer
         out = self.proj_freq(seg_out) + self.proj_pos(pos_out)

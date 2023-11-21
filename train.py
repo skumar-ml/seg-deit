@@ -56,7 +56,8 @@ def get_args_parser():
     parser.add_argument(
         "--num_tokens",
         default=196,
-        help="Number of segments in the image (tokens sent to transformer). If 'None', use batch consistency",
+        type=int,
+        help="Number of segments in the image (tokens sent to transformer). If -1, use batch consistency",
     )
 
     # Model parameters
