@@ -26,6 +26,7 @@ import cv2
 import numpy as np
 import skimage
 from functools import partial
+import time
 
 from timm.data import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 from .helpers import load_pretrained
@@ -268,16 +269,22 @@ class SegmentEmbed(nn.Module):
         B, C, H, W = x.shape
         x = x.permute(0, 2, 3, 1) # Change channels to be last dimension
         print(f"Batch shape is: {x.shape}")
+        x = x.cpu().numpy()
 
         # Iterate over each image in batch and get segmentation mask
         save_mask = np.zeros((B, H, W))
         for i, img in enumerate(x):
-            img = np.squeeze(img.cpu().numpy().copy())
+            cp_img = np.squeeze(img)
 
+            # TODO: make all parameters set by user
             if self.segmentation == "felz":
                 segmentation_mask = skimage.segmentation.felzenszwalb(
-                    img, scale=50, sigma=0.5, min_size=50
-                )  # TODO: make all parameters set by user
+                    cp_img, scale=100, sigma=0.5, min_size=50
+                ) 
+                save_mask[i, :, :] = segmentation_mask
+
+            elif self.segmentation == "slic":
+                segmentation_mask = skimage.segmentation.slic(cp_img, n_segments=196, start_label=0)
                 save_mask[i, :, :] = segmentation_mask
             else:
                 raise ValueError(f"segmentation was set to an invalid method")
@@ -290,16 +297,15 @@ class SegmentEmbed(nn.Module):
         else:
             print("Using batch consistency for number of tokens")
             # Flatten save_mask. Then find max segment value for each image. Take minimum across all images. Add 1 because of zero-based indexing
-            temp = np.max(save_mask.reshape(save_mask.shape[0], -1), axis=1)
-            num_tokens = np.min(np.max(save_mask.reshape(save_mask.shape[0], -1), axis=1)) + 1  
+            num_tokens = int(np.min(np.max(save_mask.reshape(save_mask.shape[0], -1), axis=1)) + 1)  
 
         print(f"Number of tokens that will be enforced is: {num_tokens}")
-        #### Merge segments to match consistency for batched execution####
+        #### Merge segments to match consistency for batched execution ####
         for i, img in enumerate(x):
             seg_mask = save_mask[i]
-            print(f"Image: {i}")
 
             num_segs = np.max(np.unique(seg_mask)) + 1
+            print(f"Image: {i} | Segments: {num_segs}")
             assert (
                 num_segs >= num_tokens
             ), f"Number of segments in image ({num_segs}) is less than the number of tokens required ({num_tokens}). Please lower the number of tokens or increase segmentation granularity."
@@ -333,49 +339,59 @@ class SegmentEmbed(nn.Module):
 
         # Create save tensors based on num_tokens
         seg_out = torch.zeros((B, num_tokens, self.n_points * self.n_points * 2))
-        pos_out = torch.zeros(
-            (B, num_tokens, 5)
-        )  # (height, width), (location x,y), area all from [0, 1] -- NOTE: Assuming static positional embeddings for now
+        pos_out = torch.zeros((B, num_tokens, 5))  # (height, width), (location x,y), area all from [0, 1] -- NOTE: Assuming static positional embeddings for now
 
         # For each segment in each image
-        unique_integers = range(np.max(save_mask))
-        for i, unique_int in enumerate(unique_integers):
-                # TODO: experiment with taking FT of each channel differently vs. only taking grayscale) -- add argument to specify
-                # Get each segment and take FT. Unroll and save
-                binary_mask = (save_mask[i] == unique_int).astype(np.uint8)
-                segmented_img = img * np.expand_dims(binary_mask, axis=-1)
+        for j, img in enumerate(x):
+            print(j)
+            unique_integers = range(int(np.max(save_mask[j])))
+            for i, unique_int in enumerate(unique_integers):
+                    # TODO: experiment with taking FT of each channel differently vs. only taking grayscale) -- add argument to specify
+                    # Get each segment and take FT. Unroll and save
+                    binary_mask = (save_mask[j] == unique_int).astype(np.uint8)
+                    segmented_img = img * np.expand_dims(binary_mask, axis=-1)
 
-                # Convert to grayscale if only using 1 channel
-                if self.grayscale:
-                    img = cv2.cvtColor(segmented_img, cv2.COLOR_BGR2GRAY)
+                    # Convert to grayscale if specified and image is RGB
+                    if self.grayscale:
+                        cp_img = cv2.cvtColor(segmented_img, cv2.COLOR_BGR2GRAY)
 
-                # Take FT
-                fourier_transform = np.fft.rfft2(img, s=(self.n_points, self.n_points))
-                # fourier_transform_shifted = np.fft.fftshift(fourier_transform)
+                    # Take FT
+                    fourier_transform = np.fft.fft2(cp_img, s=(self.n_points, self.n_points)) #TODO: Change to rfft2 and reduce dims to optimize (as input is always real)
+                    # fourier_transform_shifted = np.fft.fftshift(fourier_transform)
 
-                # Extract magnitude and phase information
-                magnitude = np.abs(fourier_transform)
-                phase = np.angle(fourier_transform)
+                    # Extract magnitude and phase information
+                    magnitude = np.abs(fourier_transform)
+                    phase = np.angle(fourier_transform)
 
-                # Save FT info
-                to_save = np.stack(magnitude, phase).flatten(order="F")
-                assert to_save.shape[0] == out.shape[1]
-                seg_out[i, :] = torch.from_numpy(
-                    to_save
-                ).gpu()  # TODO: make this device (how does this work with DataParallel)
+                    # Save FT info
+                    to_save = np.stack((magnitude, phase)).flatten(order="F")                    
+                    assert to_save.shape[0] == seg_out.shape[2]
+                    seg_out[j, i, :] = torch.from_numpy(
+                        to_save
+                    ).to('cuda')  # TODO: make this device (how does this work with DataParallel)
 
-                #### TODO: Verify implementation ####
-                # Center
-                seg_mask = save_mask[i]
-                num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
-                    seg_mask
-                )  #
-                pos_stats = np.stack(
-                    (stats[:, 2:4], centroids)
-                )  # Get width, height, area, and center(x,y)
-                pos_out[i, :] = torch.from_numpy(
-                    pos_stats
-                ).gpu()  # TODO: make this device (how does this work with DataParallel)
+                    #### Get position embedding info (static) TODO: Verify implementation ####
+                    # Area
+                    area = np.sum(binary_mask) / binary_mask.size
+
+                    # Center (Average)
+                    center_x = np.average(np.where(binary_mask)[1]) / binary_mask.shape[1]
+                    center_y = np.average(np.where(binary_mask)[0]) / binary_mask.shape[0]
+
+                    # Width/Height
+                    print(np.where(binary_mask).shape)
+                    width = (np.max(np.where(binary_mask)[1]) - np.min(np.where(binary_mask)[1])) / binary_mask.shape[1]
+                    height = (np.max(np.where(binary_mask)[0]) - np.min(np.where(binary_mask)[0])) / binary_mask.shape[0]
+
+                    # print(area, area.shape)
+                    # print(center_x, center_x.shape)
+                    # print(center_y, center_y.shape)
+                    # print(width, width.shape)
+                    # print(height, height.shape)
+
+                    # Store in array and convert to tensor on device
+                    pos_save = torch.from_numpy(np.array([area, center_x, center_y, width, height])).to('cuda') #TODO: make this device (how does this work with DataParallel)
+                    pos_out[j, i, :] = pos_save              
 
         # Add a linear proj layer
         out = self.proj_freq(seg_out) + self.proj_pos(pos_out)
