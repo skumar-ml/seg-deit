@@ -262,16 +262,17 @@ class SegmentEmbed(nn.Module):
         self.n_points = n_points  # N-point in FFT
         self.num_tokens = num_tokens  # number of segments to create from image
 
-        self.proj_freq = nn.Linear(self.n_points * self.n_points * 2, embed_dim)
-        self.proj_pos = nn.Linear(5, embed_dim)
+        self.proj_freq = nn.Linear(self.n_points * self.n_points * 2, embed_dim, device='cuda')
+        self.proj_pos = nn.Linear(5, embed_dim, device='cuda')
 
     def forward(self, x):
         B, C, H, W = x.shape
         x = x.permute(0, 2, 3, 1) # Change channels to be last dimension
-        print(f"Batch shape is: {x.shape}")
+        # print(f"Batch shape is: {x.shape}")
         x = x.cpu().numpy()
 
         # Iterate over each image in batch and get segmentation mask
+        start_time = time.time()
         save_mask = np.zeros((B, H, W))
         for i, img in enumerate(x):
             cp_img = np.squeeze(img)
@@ -279,7 +280,7 @@ class SegmentEmbed(nn.Module):
             # TODO: make all parameters set by user
             if self.segmentation == "felz":
                 segmentation_mask = skimage.segmentation.felzenszwalb(
-                    cp_img, scale=100, sigma=0.5, min_size=50
+                    cp_img, scale=100, sigma=0.5, min_size=150
                 ) 
                 save_mask[i, :, :] = segmentation_mask
 
@@ -289,23 +290,26 @@ class SegmentEmbed(nn.Module):
             else:
                 raise ValueError(f"segmentation was set to an invalid method")
 
+        print(f"Time to get segmentation masks: {time.time() - start_time}")
+
         # Globally consistent number of tokens in image
         if self.num_tokens > 0:
-            print("Using global consistency for number of tokens")
+            # print("Using global consistency for number of tokens")
             num_tokens = self.num_tokens
         # Batch-consistent number of tokens in image
         else:
-            print("Using batch consistency for number of tokens")
+            # print("Using batch consistency for number of tokens")
             # Flatten save_mask. Then find max segment value for each image. Take minimum across all images. Add 1 because of zero-based indexing
             num_tokens = int(np.min(np.max(save_mask.reshape(save_mask.shape[0], -1), axis=1)) + 1)  
 
-        print(f"Number of tokens that will be enforced is: {num_tokens}")
+        # print(f"Number of tokens that will be enforced is: {num_tokens}")
         #### Merge segments to match consistency for batched execution ####
+        start_time = time.time()
         for i, img in enumerate(x):
             seg_mask = save_mask[i]
 
             num_segs = np.max(np.unique(seg_mask)) + 1
-            print(f"Image: {i} | Segments: {num_segs}")
+            # print(f"Image: {i} | Segments: {num_segs}")
             assert (
                 num_segs >= num_tokens
             ), f"Number of segments in image ({num_segs}) is less than the number of tokens required ({num_tokens}). Please lower the number of tokens or increase segmentation granularity."
@@ -331,24 +335,29 @@ class SegmentEmbed(nn.Module):
                 merge_seg = np.random.choice(filtered_bneighbors) # randomly pick a segment
                 seg_mask[seg_mask == smallest_seg] = merge_seg # merge them
 
-                # Relabel mask
+                # Relabel mask & save
                 seg_mask = (skimage.segmentation.relabel_sequential(seg_mask.astype(int)))[0]
+                save_mask[i] = seg_mask
 
                 # Update termination condition
                 num_segs = np.max(np.unique(seg_mask.flatten())) + 1
 
+        print(f"Time to merge segments: {time.time() - start_time}")
         # Create save tensors based on num_tokens
-        seg_out = torch.zeros((B, num_tokens, self.n_points * self.n_points * 2))
-        pos_out = torch.zeros((B, num_tokens, 5))  # (height, width), (location x,y), area all from [0, 1] -- NOTE: Assuming static positional embeddings for now
+        seg_out = torch.zeros((B, num_tokens, self.n_points * self.n_points * 2), device='cuda')
+        pos_out = torch.zeros((B, num_tokens, 5), device='cuda')  # (height, width), (location x,y), area all from [0, 1] -- NOTE: Assuming static positional embeddings for now
 
-        # For each segment in each image
+        # For each segment in each image, get FT and positional embedding
+        start_time = time.time()
         for j, img in enumerate(x):
-            print(j)
-            unique_integers = range(int(np.max(save_mask[j])))
-            for i, unique_int in enumerate(unique_integers):
+            # print(j)
+            unique_integers = np.unique(save_mask[j], return_counts=True)
+            # print(unique_integers)
+
+            for i, unique_int in enumerate(unique_integers[0]):
                     # TODO: experiment with taking FT of each channel differently vs. only taking grayscale) -- add argument to specify
                     # Get each segment and take FT. Unroll and save
-                    binary_mask = (save_mask[j] == unique_int).astype(np.uint8)
+                    binary_mask = (save_mask[j] == unique_int)
                     segmented_img = img * np.expand_dims(binary_mask, axis=-1)
 
                     # Convert to grayscale if specified and image is RGB
@@ -366,9 +375,7 @@ class SegmentEmbed(nn.Module):
                     # Save FT info
                     to_save = np.stack((magnitude, phase)).flatten(order="F")                    
                     assert to_save.shape[0] == seg_out.shape[2]
-                    seg_out[j, i, :] = torch.from_numpy(
-                        to_save
-                    ).to('cuda')  # TODO: make this device (how does this work with DataParallel)
+                    seg_out[j, i, :] = torch.from_numpy(to_save).to('cuda')  # TODO: make this device (how does this work with DataParallel)
 
                     #### Get position embedding info (static) TODO: Verify implementation ####
                     # Area
@@ -379,7 +386,7 @@ class SegmentEmbed(nn.Module):
                     center_y = np.average(np.where(binary_mask)[0]) / binary_mask.shape[0]
 
                     # Width/Height
-                    print(np.where(binary_mask).shape)
+                    # print(np.where(binary_mask)[1].shape)
                     width = (np.max(np.where(binary_mask)[1]) - np.min(np.where(binary_mask)[1])) / binary_mask.shape[1]
                     height = (np.max(np.where(binary_mask)[0]) - np.min(np.where(binary_mask)[0])) / binary_mask.shape[0]
 
@@ -390,9 +397,10 @@ class SegmentEmbed(nn.Module):
                     # print(height, height.shape)
 
                     # Store in array and convert to tensor on device
-                    pos_save = torch.from_numpy(np.array([area, center_x, center_y, width, height])).to('cuda') #TODO: make this device (how does this work with DataParallel)
-                    pos_out[j, i, :] = pos_save              
+                    pos_save = torch.from_numpy(np.array([area, center_x, center_y, width, height])) #TODO: make this device (how does this work with DataParallel)
+                    pos_out[j, i, :] = pos_save.to('cuda')
 
+        print(f"Time to get FT and positional embeds: {time.time() - start_time}")
         # Add a linear proj layer
         out = self.proj_freq(seg_out) + self.proj_pos(pos_out)
 

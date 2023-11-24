@@ -1,3 +1,1243 @@
 Namespace(batch_size=8, epochs=300, bce_loss=False, unscale_lr=False, segmentation='felz', grayscale=True, n_points=64, num_tokens=-1, model='segvit_tiny', input_size=224, drop=0.0, drop_path=0.1, model_ema=True, model_ema_decay=0.99996, model_ema_force_cpu=False, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.05, sched='cosine', lr=0.0005, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-05, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, color_jitter=0.3, aa='rand-m9-mstd0.5-inc1', smoothing=0.1, train_interpolation='bicubic', repeated_aug=True, train_mode=True, ThreeAugment=False, src=False, reprob=0.25, remode='pixel', recount=1, resplit=False, mixup=0.8, cutmix=1.0, cutmix_minmax=None, mixup_prob=1.0, mixup_switch_prob=0.5, mixup_mode='batch', teacher_model='regnety_160', teacher_path='', distillation_type='none', distillation_alpha=0.5, distillation_tau=1.0, cosub=False, finetune='', attn_only=False, data_path='~/../../data/sb56/data/Imagenet/', data_set='IMNET', inat_category='name', output_dir='outputs/', device='cuda', seed=0, resume='', start_epoch=0, eval=False, eval_crop_ratio=0.875, dist_eval=False, num_workers=10, pin_mem=True)
 number of params: 6212200
 Start training for 300 epochs
+Time to get segmentation masks: 0.7852954864501953
+Time to merge segments: 16.171385049819946
+Time to get FT and positional embeds: 1.7566726207733154
+Epoch: [0]  [     0/160145]  eta: 39 days, 0:47:09  lr: 0.000001  loss: 6.9019 (6.9019)  time: 21.0586  data: 2.1925  max mem: 305
+Time to get segmentation masks: 0.5715937614440918
+Time to merge segments: 10.31713581085205
+Time to get FT and positional embeds: 1.8332839012145996
+Time to get segmentation masks: 0.6630821228027344
+Time to merge segments: 46.73016691207886
+Time to get FT and positional embeds: 0.12020564079284668
+Time to get segmentation masks: 0.555487871170044
+Time to merge segments: 28.614919662475586
+Time to get FT and positional embeds: 1.2222399711608887
+Time to get segmentation masks: 0.565018892288208
+Time to merge segments: 35.7262761592865
+Time to get FT and positional embeds: 1.351041316986084
+Time to get segmentation masks: 0.5658788681030273
+Time to merge segments: 43.41465759277344
+Time to get FT and positional embeds: 1.0420565605163574
+Time to get segmentation masks: 0.5680434703826904
+Time to merge segments: 45.583600759506226
+Time to get FT and positional embeds: 0.5064411163330078
+Time to get segmentation masks: 0.5672614574432373
+Time to merge segments: 30.554781913757324
+Time to get FT and positional embeds: 1.1773009300231934
+Time to get segmentation masks: 0.5599439144134521
+Time to merge segments: 14.01525616645813
+Time to get FT and positional embeds: 1.7859773635864258
+Time to get segmentation masks: 0.5648114681243896
+Time to merge segments: 28.184136390686035
+Time to get FT and positional embeds: 1.0743107795715332
+Time to get segmentation masks: 0.5717272758483887
+Time to merge segments: 29.092916250228882
+Time to get FT and positional embeds: 1.3551762104034424
+Epoch: [0]  [    10/160145]  eta: 59 days, 3:03:53  lr: 0.000001  loss: 6.9324 (6.9326)  time: 31.9020  data: 0.1994  max mem: 386
+Time to get segmentation masks: 0.5728449821472168
+Time to merge segments: 23.958484411239624
+Time to get FT and positional embeds: 1.4628846645355225
+Time to get segmentation masks: 0.5689542293548584
+Time to merge segments: 44.278388023376465
+Time to get FT and positional embeds: 1.0136680603027344
+Time to get segmentation masks: 0.5511856079101562
+Time to merge segments: 19.406052589416504
+Time to get FT and positional embeds: 1.3865456581115723
+Time to get segmentation masks: 0.56870436668396
+Time to merge segments: 14.09975790977478
+Time to get FT and positional embeds: 1.9036314487457275
+Time to get segmentation masks: 0.5699009895324707
+Time to merge segments: 22.87213158607483
+Time to get FT and positional embeds: 1.461015224456787
+Time to get segmentation masks: 0.5497539043426514
+Time to merge segments: 61.591813802719116
+Time to get FT and positional embeds: 0.5614638328552246
+Time to get segmentation masks: 0.5670225620269775
+Time to merge segments: 14.051488637924194
+Time to get FT and positional embeds: 1.3901500701904297
+Time to get segmentation masks: 0.5701730251312256
+Time to merge segments: 17.053624153137207
+Time to get FT and positional embeds: 1.5771403312683105
+Time to get segmentation masks: 0.566730260848999
+Time to merge segments: 58.66185665130615
+Time to get FT and positional embeds: 0.6687896251678467
+Time to get segmentation masks: 0.5695748329162598
+Time to merge segments: 36.94896078109741
+Time to get FT and positional embeds: 1.0036935806274414
+Epoch: [0]  [    20/160145]  eta: 60 days, 5:12:42  lr: 0.000001  loss: 6.9324 (6.9449)  time: 33.0635  data: 0.0001  max mem: 392
+Time to get segmentation masks: 0.5677368640899658
+Time to merge segments: 45.80334734916687
+Time to get FT and positional embeds: 0.9744155406951904
+Time to get segmentation masks: 0.571173906326294
+Time to merge segments: 19.565904140472412
+Time to get FT and positional embeds: 1.5619134902954102
+Time to get segmentation masks: 0.5899207592010498
+Time to merge segments: 37.49775743484497
+Time to get FT and positional embeds: 0.5630137920379639
+Time to get segmentation masks: 0.5609045028686523
+Time to merge segments: 22.008488416671753
+Time to get FT and positional embeds: 1.484220266342163
+Time to get segmentation masks: 0.5467414855957031
+Time to merge segments: 24.225834369659424
+Time to get FT and positional embeds: 0.9852504730224609
+Time to get segmentation masks: 0.5500521659851074
+Time to merge segments: 22.91035747528076
+Time to get FT and positional embeds: 1.052983045578003
+Time to get segmentation masks: 0.5639142990112305
+Time to merge segments: 22.13275694847107
+Time to get FT and positional embeds: 1.215419054031372
+Time to get segmentation masks: 0.5666763782501221
+Time to merge segments: 14.29947805404663
+Time to get FT and positional embeds: 1.4963314533233643
+Time to get segmentation masks: 0.5485889911651611
+Time to merge segments: 37.22223448753357
+Time to get FT and positional embeds: 0.9212503433227539
+Time to get segmentation masks: 0.5649447441101074
+Time to merge segments: 7.080887317657471
+Time to get FT and positional embeds: 2.169168710708618
+Epoch: [0]  [    30/160145]  eta: 57 days, 0:03:35  lr: 0.000001  loss: 6.9508 (6.9350)  time: 30.1307  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5589780807495117
+Time to merge segments: 27.889410972595215
+Time to get FT and positional embeds: 1.186767578125
+Time to get segmentation masks: 0.5608172416687012
+Time to merge segments: 11.039426326751709
+Time to get FT and positional embeds: 1.7274742126464844
+Time to get segmentation masks: 0.5741884708404541
+Time to merge segments: 24.957120418548584
+Time to get FT and positional embeds: 0.9287934303283691
+Time to get segmentation masks: 0.5716044902801514
+Time to merge segments: 19.63834047317505
+Time to get FT and positional embeds: 0.9995718002319336
+Time to get segmentation masks: 0.5667135715484619
+Time to merge segments: 35.02135872840881
+Time to get FT and positional embeds: 1.5255463123321533
+Time to get segmentation masks: 0.5645205974578857
+Time to merge segments: 40.511675119400024
+Time to get FT and positional embeds: 1.2060472965240479
+Time to get segmentation masks: 0.5688114166259766
+Time to merge segments: 29.604036569595337
+Time to get FT and positional embeds: 1.1411454677581787
+Time to get segmentation masks: 0.5632719993591309
+Time to merge segments: 50.27058553695679
+Time to get FT and positional embeds: 0.6210794448852539
+Time to get segmentation masks: 0.5709996223449707
+Time to merge segments: 27.43579888343811
+Time to get FT and positional embeds: 1.0428202152252197
+Time to get segmentation masks: 0.556849479675293
+Time to merge segments: 36.29491066932678
+Time to get FT and positional embeds: 0.9847185611724854
+Epoch: [0]  [    40/160145]  eta: 57 days, 13:32:25  lr: 0.000001  loss: 6.9425 (6.9397)  time: 29.5653  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5644302368164062
+Time to merge segments: 33.9625027179718
+Time to get FT and positional embeds: 1.3294157981872559
+Time to get segmentation masks: 0.5647013187408447
+Time to merge segments: 24.476383447647095
+Time to get FT and positional embeds: 1.2658627033233643
+Time to get segmentation masks: 0.5737838745117188
+Time to merge segments: 29.623042106628418
+Time to get FT and positional embeds: 1.0604991912841797
+Time to get segmentation masks: 0.5652139186859131
+Time to merge segments: 24.164443731307983
+Time to get FT and positional embeds: 1.204468011856079
+Time to get segmentation masks: 0.5540273189544678
+Time to merge segments: 20.83082866668701
+Time to get FT and positional embeds: 1.9408326148986816
+Time to get segmentation masks: 0.5488486289978027
+Time to merge segments: 45.62955904006958
+Time to get FT and positional embeds: 0.5654494762420654
+Time to get segmentation masks: 0.5545434951782227
+Time to merge segments: 23.344710111618042
+Time to get FT and positional embeds: 1.463895320892334
+Time to get segmentation masks: 0.5600616931915283
+Time to merge segments: 50.81238532066345
+Time to get FT and positional embeds: 0.1684865951538086
+Time to get segmentation masks: 0.5675804615020752
+Time to merge segments: 35.13164258003235
+Time to get FT and positional embeds: 0.9482488632202148
+Time to get segmentation masks: 0.560502290725708
+Time to merge segments: 21.169089794158936
+Time to get FT and positional embeds: 1.376068115234375
+Epoch: [0]  [    50/160145]  eta: 58 days, 3:16:56  lr: 0.000001  loss: 6.9337 (6.9399)  time: 32.3300  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5565447807312012
+Time to merge segments: 43.21754217147827
+Time to get FT and positional embeds: 1.2334685325622559
+Time to get segmentation masks: 0.5601952075958252
+Time to merge segments: 20.422220706939697
+Time to get FT and positional embeds: 1.48305344581604
+Time to get segmentation masks: 0.5484800338745117
+Time to merge segments: 54.75054383277893
+Time to get FT and positional embeds: 0.6002774238586426
+Time to get segmentation masks: 0.5663487911224365
+Time to merge segments: 41.645349979400635
+Time to get FT and positional embeds: 1.0100557804107666
+Time to get segmentation masks: 0.564826488494873
+Time to merge segments: 31.139887809753418
+Time to get FT and positional embeds: 1.1675610542297363
+Time to get segmentation masks: 0.5738704204559326
+Time to merge segments: 34.69239687919617
+Time to get FT and positional embeds: 0.7727892398834229
+Time to get segmentation masks: 0.5554718971252441
+Time to merge segments: 44.23542141914368
+Time to get FT and positional embeds: 0.6793210506439209
+Time to get segmentation masks: 0.5627357959747314
+Time to merge segments: 8.76221489906311
+Time to get FT and positional embeds: 2.177271604537964
+Time to get segmentation masks: 0.5302879810333252
+Time to merge segments: 56.594460010528564
+Time to get FT and positional embeds: 0.38420581817626953
+Time to get segmentation masks: 0.5499911308288574
+Time to merge segments: 28.37386441230774
+Time to get FT and positional embeds: 1.0639441013336182
+Epoch: [0]  [    60/160145]  eta: 60 days, 3:46:14  lr: 0.000001  loss: 6.9346 (6.9407)  time: 35.3444  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5482316017150879
+Time to merge segments: 27.347233772277832
+Time to get FT and positional embeds: 0.9216756820678711
+Time to get segmentation masks: 0.5628857612609863
+Time to merge segments: 22.013659715652466
+Time to get FT and positional embeds: 1.730609655380249
+Time to get segmentation masks: 0.5480184555053711
+Time to merge segments: 37.10358381271362
+Time to get FT and positional embeds: 1.0577573776245117
+Time to get segmentation masks: 0.5775821208953857
+Time to merge segments: 43.6044819355011
+Time to get FT and positional embeds: 0.8923842906951904
+Time to get segmentation masks: 0.5573205947875977
+Time to merge segments: 31.638368129730225
+Time to get FT and positional embeds: 1.0089800357818604
+Time to get segmentation masks: 0.582667350769043
+Time to merge segments: 33.58504676818848
+Time to get FT and positional embeds: 0.9337310791015625
+Time to get segmentation masks: 0.5696437358856201
+Time to merge segments: 16.604501485824585
+Time to get FT and positional embeds: 1.7905397415161133
+Time to get segmentation masks: 0.54573655128479
+Time to merge segments: 41.991828203201294
+Time to get FT and positional embeds: 0.5446031093597412
+Time to get segmentation masks: 0.5754001140594482
+Time to merge segments: 27.1935875415802
+Time to get FT and positional embeds: 1.4286377429962158
+Time to get segmentation masks: 0.5736651420593262
+Time to merge segments: 34.67885780334473
+Time to get FT and positional embeds: 1.1675512790679932
+Epoch: [0]  [    70/160145]  eta: 60 days, 9:04:34  lr: 0.000001  loss: 6.9564 (6.9463)  time: 35.6839  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5471477508544922
+Time to merge segments: 28.50612998008728
+Time to get FT and positional embeds: 0.9813313484191895
+Time to get segmentation masks: 0.5677645206451416
+Time to merge segments: 34.30306625366211
+Time to get FT and positional embeds: 1.0513818264007568
+Time to get segmentation masks: 0.5561094284057617
+Time to merge segments: 33.82182312011719
+Time to get FT and positional embeds: 0.9771864414215088
+Time to get segmentation masks: 0.5687580108642578
+Time to merge segments: 21.94314694404602
+Time to get FT and positional embeds: 1.4055728912353516
+Time to get segmentation masks: 0.5985512733459473
+Time to merge segments: 30.212700843811035
+Time to get FT and positional embeds: 1.1716735363006592
+Time to get segmentation masks: 0.5661933422088623
+Time to merge segments: 55.79570293426514
+Time to get FT and positional embeds: 0.7986321449279785
+Time to get segmentation masks: 0.5440614223480225
+Time to merge segments: 35.744500398635864
+Time to get FT and positional embeds: 1.3151154518127441
+Time to get segmentation masks: 0.5640759468078613
+Time to merge segments: 30.36334991455078
+Time to get FT and positional embeds: 1.4415841102600098
+Time to get segmentation masks: 0.5645325183868408
+Time to merge segments: 33.47047519683838
+Time to get FT and positional embeds: 0.6428124904632568
+Time to get segmentation masks: 0.5530195236206055
+Time to merge segments: 36.48593473434448
+Time to get FT and positional embeds: 1.0752146244049072
+Epoch: [0]  [    80/160145]  eta: 61 days, 2:21:52  lr: 0.000001  loss: 6.9564 (6.9436)  time: 34.5421  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5810725688934326
+Time to merge segments: 53.420891523361206
+Time to get FT and positional embeds: 0.45659685134887695
+Time to get segmentation masks: 0.5546314716339111
+Time to merge segments: 28.75121808052063
+Time to get FT and positional embeds: 0.8952362537384033
+Time to get segmentation masks: 0.5699737071990967
+Time to merge segments: 38.03139591217041
+Time to get FT and positional embeds: 1.1339445114135742
+Time to get segmentation masks: 0.5553948879241943
+Time to merge segments: 27.983485460281372
+Time to get FT and positional embeds: 1.1835503578186035
+Time to get segmentation masks: 0.559403657913208
+Time to merge segments: 58.550235986709595
+Time to get FT and positional embeds: 0.5646946430206299
+Time to get segmentation masks: 0.5916397571563721
+Time to merge segments: 16.160634517669678
+Time to get FT and positional embeds: 1.4389963150024414
+Time to get segmentation masks: 0.5636208057403564
+Time to merge segments: 18.039944410324097
+Time to get FT and positional embeds: 1.3082094192504883
+Time to get segmentation masks: 0.5758192539215088
+Time to merge segments: 39.74205780029297
+Time to get FT and positional embeds: 0.6604173183441162
+Time to get segmentation masks: 0.5668168067932129
+Time to merge segments: 57.14271640777588
+Time to get FT and positional embeds: 0.6443653106689453
+Time to get segmentation masks: 0.5588195323944092
+Time to merge segments: 16.809253215789795
+Time to get FT and positional embeds: 1.484065294265747
+Epoch: [0]  [    90/160145]  eta: 61 days, 22:09:28  lr: 0.000001  loss: 6.9463 (6.9455)  time: 36.4024  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.555640697479248
+Time to merge segments: 32.10071802139282
+Time to get FT and positional embeds: 1.3008766174316406
+Time to get segmentation masks: 0.5614922046661377
+Time to merge segments: 19.67729616165161
+Time to get FT and positional embeds: 1.707489013671875
+Time to get segmentation masks: 0.5684335231781006
+Time to merge segments: 63.64153218269348
+Time to get FT and positional embeds: 0.2837393283843994
+Time to get segmentation masks: 0.5458722114562988
+Time to merge segments: 19.898842573165894
+Time to get FT and positional embeds: 1.5871145725250244
+Time to get segmentation masks: 0.5662877559661865
+Time to merge segments: 17.110172271728516
+Time to get FT and positional embeds: 1.5367040634155273
+Time to get segmentation masks: 0.555239200592041
+Time to merge segments: 38.61409544944763
+Time to get FT and positional embeds: 1.0385727882385254
+Time to get segmentation masks: 0.5459380149841309
+Time to merge segments: 30.482389450073242
+Time to get FT and positional embeds: 0.9980731010437012
+Time to get segmentation masks: 0.5562613010406494
+Time to merge segments: 14.985562801361084
+Time to get FT and positional embeds: 1.2566807270050049
+Time to get segmentation masks: 0.5585179328918457
+Time to merge segments: 22.008007526397705
+Time to get FT and positional embeds: 1.650416374206543
+Time to get segmentation masks: 0.562089204788208
+Time to merge segments: 44.15151309967041
+Time to get FT and positional embeds: 0.7321836948394775
+Epoch: [0]  [   100/160145]  eta: 61 days, 16:06:58  lr: 0.000001  loss: 6.9547 (6.9473)  time: 34.5627  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5431709289550781
+Time to merge segments: 47.80720114707947
+Time to get FT and positional embeds: 0.3108501434326172
+Time to get segmentation masks: 0.5453517436981201
+Time to merge segments: 36.60396456718445
+Time to get FT and positional embeds: 1.1374003887176514
+Time to get segmentation masks: 0.5575368404388428
+Time to merge segments: 14.058770418167114
+Time to get FT and positional embeds: 1.9850435256958008
+Time to get segmentation masks: 0.5500943660736084
+Time to merge segments: 24.88766646385193
+Time to get FT and positional embeds: 1.1919023990631104
+Time to get segmentation masks: 0.5581932067871094
+Time to merge segments: 11.736555099487305
+Time to get FT and positional embeds: 1.586996078491211
+Time to get segmentation masks: 0.541473388671875
+Time to merge segments: 52.69094467163086
+Time to get FT and positional embeds: 0.34265708923339844
+Time to get segmentation masks: 0.5611114501953125
+Time to merge segments: 22.90313148498535
+Time to get FT and positional embeds: 1.0799133777618408
+Time to get segmentation masks: 0.5716292858123779
+Time to merge segments: 32.314263582229614
+Time to get FT and positional embeds: 1.1592276096343994
+Time to get segmentation masks: 0.5626115798950195
+Time to merge segments: 18.138154983520508
+Time to get FT and positional embeds: 1.6548559665679932
+Time to get segmentation masks: 0.5655364990234375
+Time to merge segments: 24.506551027297974
+Time to get FT and positional embeds: 1.7368178367614746
+Epoch: [0]  [   110/160145]  eta: 61 days, 4:21:35  lr: 0.000001  loss: 6.9547 (6.9505)  time: 31.2282  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5487308502197266
+Time to merge segments: 31.787043809890747
+Time to get FT and positional embeds: 1.1198158264160156
+Time to get segmentation masks: 0.5641663074493408
+Time to merge segments: 27.032238721847534
+Time to get FT and positional embeds: 1.1843595504760742
+Time to get segmentation masks: 0.5818369388580322
+Time to merge segments: 31.9624502658844
+Time to get FT and positional embeds: 1.162276268005371
+Time to get segmentation masks: 0.5597395896911621
+Time to merge segments: 63.46691560745239
+Time to get FT and positional embeds: 0.4006021022796631
+Time to get segmentation masks: 0.5538454055786133
+Time to merge segments: 26.3678195476532
+Time to get FT and positional embeds: 1.2703828811645508
+Time to get segmentation masks: 0.5533285140991211
+Time to merge segments: 27.54427409172058
+Time to get FT and positional embeds: 0.9436187744140625
+Time to get segmentation masks: 0.5434274673461914
+Time to merge segments: 28.475976943969727
+Time to get FT and positional embeds: 0.8144991397857666
+Time to get segmentation masks: 0.5524439811706543
+Time to merge segments: 12.262554168701172
+Time to get FT and positional embeds: 1.606114387512207
+Time to get segmentation masks: 0.573406457901001
+Time to merge segments: 31.768555402755737
+Time to get FT and positional embeds: 1.4129841327667236
+Time to get segmentation masks: 0.5437510013580322
+Time to merge segments: 33.97097086906433
+Time to get FT and positional embeds: 0.9696059226989746
+Epoch: [0]  [   120/160145]  eta: 61 days, 4:42:30  lr: 0.000001  loss: 6.9406 (6.9505)  time: 31.7658  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5664892196655273
+Time to merge segments: 29.217578411102295
+Time to get FT and positional embeds: 1.3580174446105957
+Time to get segmentation masks: 0.5647845268249512
+Time to merge segments: 18.056620121002197
+Time to get FT and positional embeds: 1.3979535102844238
+Time to get segmentation masks: 0.5487041473388672
+Time to merge segments: 26.078493356704712
+Time to get FT and positional embeds: 1.2676701545715332
+Time to get segmentation masks: 0.5601515769958496
+Time to merge segments: 57.473999977111816
+Time to get FT and positional embeds: 0.3558683395385742
+Time to get segmentation masks: 0.5673692226409912
+Time to merge segments: 41.29327392578125
+Time to get FT and positional embeds: 1.1750454902648926
+Time to get segmentation masks: 0.5680232048034668
+Time to merge segments: 42.84666991233826
+Time to get FT and positional embeds: 0.9076099395751953
+Time to get segmentation masks: 0.5720424652099609
+Time to merge segments: 58.22047758102417
+Time to get FT and positional embeds: 0.22342729568481445
+Time to get segmentation masks: 0.5649731159210205
+Time to merge segments: 28.69892168045044
+Time to get FT and positional embeds: 1.5846703052520752
+Time to get segmentation masks: 0.5565927028656006
+Time to merge segments: 20.681121110916138
+Time to get FT and positional embeds: 1.3622760772705078
+Time to get segmentation masks: 0.5662477016448975
+Time to merge segments: 28.211723566055298
+Time to get FT and positional embeds: 1.2245604991912842
+Epoch: [0]  [   130/160145]  eta: 61 days, 17:15:50  lr: 0.000001  loss: 6.9368 (6.9505)  time: 34.9595  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5375785827636719
+Time to merge segments: 39.202397108078
+Time to get FT and positional embeds: 0.6194946765899658
+Time to get segmentation masks: 0.5567672252655029
+Time to merge segments: 15.147124528884888
+Time to get FT and positional embeds: 1.9661686420440674
+Time to get segmentation masks: 0.5560526847839355
+Time to merge segments: 16.927499532699585
+Time to get FT and positional embeds: 1.5340890884399414
+Time to get segmentation masks: 0.5626521110534668
+Time to merge segments: 39.00434184074402
+Time to get FT and positional embeds: 1.0120975971221924
+Time to get segmentation masks: 0.5541932582855225
+Time to merge segments: 26.67984628677368
+Time to get FT and positional embeds: 1.005333662033081
+Time to get segmentation masks: 0.5531809329986572
+Time to merge segments: 46.50917410850525
+Time to get FT and positional embeds: 0.7990529537200928
+Time to get segmentation masks: 0.5721452236175537
+Time to merge segments: 43.93409299850464
+Time to get FT and positional embeds: 1.0701172351837158
+Time to get segmentation masks: 0.5597419738769531
+Time to merge segments: 12.532433271408081
+Time to get FT and positional embeds: 1.7419569492340088
+Time to get segmentation masks: 0.5421903133392334
+Time to merge segments: 71.16263937950134
+Time to get FT and positional embeds: 0.15389013290405273
+Time to get segmentation masks: 0.5702810287475586
+Time to merge segments: 19.430033922195435
+Time to get FT and positional embeds: 1.5470216274261475
+Epoch: [0]  [   140/160145]  eta: 61 days, 21:48:05  lr: 0.000001  loss: 6.9339 (6.9516)  time: 35.7812  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5661635398864746
+Time to merge segments: 33.457878828048706
+Time to get FT and positional embeds: 1.4138309955596924
+Time to get segmentation masks: 0.5701298713684082
+Time to merge segments: 39.380053758621216
+Time to get FT and positional embeds: 0.8309280872344971
+Time to get segmentation masks: 0.5614709854125977
+Time to merge segments: 47.334431886672974
+Time to get FT and positional embeds: 0.6018309593200684
+Time to get segmentation masks: 0.5653696060180664
+Time to merge segments: 26.42194437980652
+Time to get FT and positional embeds: 1.1948325634002686
+Time to get segmentation masks: 0.5616269111633301
+Time to merge segments: 30.62873911857605
+Time to get FT and positional embeds: 1.5351815223693848
+Time to get segmentation masks: 0.5655789375305176
+Time to merge segments: 43.215176820755005
+Time to get FT and positional embeds: 1.2449815273284912
+Time to get segmentation masks: 0.5676629543304443
+Time to merge segments: 14.577775478363037
+Time to get FT and positional embeds: 1.33943510055542
+Time to get segmentation masks: 0.5634372234344482
+Time to merge segments: 22.130393505096436
+Time to get FT and positional embeds: 1.7970588207244873
+Time to get segmentation masks: 0.562260627746582
+Time to merge segments: 37.84583854675293
+Time to get FT and positional embeds: 1.2783560752868652
+Time to get segmentation masks: 0.5600461959838867
+Time to merge segments: 48.523152589797974
+Time to get FT and positional embeds: 0.6459341049194336
+Epoch: [0]  [   150/160145]  eta: 62 days, 5:42:06  lr: 0.000001  loss: 6.9339 (6.9527)  time: 35.4697  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5624134540557861
+Time to merge segments: 19.59142518043518
+Time to get FT and positional embeds: 1.253605604171753
+Time to get segmentation masks: 0.564420223236084
+Time to merge segments: 24.849323749542236
+Time to get FT and positional embeds: 1.4956717491149902
+Time to get segmentation masks: 0.5560891628265381
+Time to merge segments: 31.002384185791016
+Time to get FT and positional embeds: 1.2733564376831055
+Time to get segmentation masks: 0.5680806636810303
+Time to merge segments: 33.201799392700195
+Time to get FT and positional embeds: 1.6047337055206299
+Time to get segmentation masks: 0.5562753677368164
+Time to merge segments: 23.481906175613403
+Time to get FT and positional embeds: 1.2788712978363037
+Time to get segmentation masks: 0.5648665428161621
+Time to merge segments: 20.141666173934937
+Time to get FT and positional embeds: 1.6620185375213623
+Time to get segmentation masks: 0.5629045963287354
+Time to merge segments: 18.64749312400818
+Time to get FT and positional embeds: 1.5478334426879883
+Time to get segmentation masks: 0.5712401866912842
+Time to merge segments: 33.7261962890625
+Time to get FT and positional embeds: 0.7830798625946045
+Time to get segmentation masks: 0.5665915012359619
+Time to merge segments: 12.543725967407227
+Time to get FT and positional embeds: 1.358445644378662
+Time to get segmentation masks: 0.5604202747344971
+Time to merge segments: 68.19974780082703
+Time to get FT and positional embeds: 0.08644556999206543
+Epoch: [0]  [   160/160145]  eta: 61 days, 20:41:15  lr: 0.000001  loss: 6.9561 (6.9548)  time: 33.2613  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5577752590179443
+Time to merge segments: 24.120969533920288
+Time to get FT and positional embeds: 1.1890020370483398
+Time to get segmentation masks: 0.5681395530700684
+Time to merge segments: 25.163957357406616
+Time to get FT and positional embeds: 1.519047737121582
+Time to get segmentation masks: 0.5634465217590332
+Time to merge segments: 40.06243872642517
+Time to get FT and positional embeds: 0.9000046253204346
+Time to get segmentation masks: 0.5638847351074219
+Time to merge segments: 46.64472460746765
+Time to get FT and positional embeds: 0.9038984775543213
+Time to get segmentation masks: 0.5689795017242432
+Time to merge segments: 18.57671284675598
+Time to get FT and positional embeds: 1.635761022567749
+Time to get segmentation masks: 0.5614540576934814
+Time to merge segments: 34.39010047912598
+Time to get FT and positional embeds: 1.333205223083496
+Time to get segmentation masks: 0.562227725982666
+Time to merge segments: 44.509321451187134
+Time to get FT and positional embeds: 0.8723001480102539
+Time to get segmentation masks: 0.5740838050842285
+Time to merge segments: 39.403143644332886
+Time to get FT and positional embeds: 0.8618631362915039
+Time to get segmentation masks: 0.5650904178619385
+Time to merge segments: 22.83607816696167
+Time to get FT and positional embeds: 1.4112510681152344
+Time to get segmentation masks: 0.5569562911987305
+Time to merge segments: 30.19699788093567
+Time to get FT and positional embeds: 1.3159596920013428
+Epoch: [0]  [   170/160145]  eta: 61 days, 23:08:47  lr: 0.000001  loss: 6.9382 (6.9515)  time: 32.3840  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5595824718475342
+Time to merge segments: 22.059814453125
+Time to get FT and positional embeds: 1.316347599029541
+Time to get segmentation masks: 0.5398485660552979
+Time to merge segments: 24.25406837463379
+Time to get FT and positional embeds: 1.2395858764648438
+Time to get segmentation masks: 0.5644102096557617
+Time to merge segments: 6.733585834503174
+Time to get FT and positional embeds: 2.01558518409729
+Time to get segmentation masks: 0.5668904781341553
+Time to merge segments: 12.595183849334717
+Time to get FT and positional embeds: 2.1813347339630127
+Time to get segmentation masks: 0.5639503002166748
+Time to merge segments: 20.180264234542847
+Time to get FT and positional embeds: 1.5929429531097412
+Time to get segmentation masks: 0.5501832962036133
+Time to merge segments: 28.943828582763672
+Time to get FT and positional embeds: 1.165121078491211
+Time to get segmentation masks: 0.5652382373809814
+Time to merge segments: 42.70469355583191
+Time to get FT and positional embeds: 0.820263147354126
+Time to get segmentation masks: 0.5674319267272949
+Time to merge segments: 19.675874948501587
+Time to get FT and positional embeds: 1.928257942199707
+Time to get segmentation masks: 0.5673153400421143
+Time to merge segments: 15.798489332199097
+Time to get FT and positional embeds: 1.4575605392456055
+Time to get segmentation masks: 0.5705399513244629
+Time to merge segments: 55.12404680252075
+Time to get FT and positional embeds: 0.2975125312805176
+Epoch: [0]  [   180/160145]  eta: 61 days, 6:42:51  lr: 0.000001  loss: 6.9338 (6.9515)  time: 30.6005  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5349617004394531
+Time to merge segments: 32.56594491004944
+Time to get FT and positional embeds: 0.7671489715576172
+Time to get segmentation masks: 0.5565769672393799
+Time to merge segments: 32.20758080482483
+Time to get FT and positional embeds: 0.6561205387115479
+Time to get segmentation masks: 0.564305305480957
+Time to merge segments: 14.1500563621521
+Time to get FT and positional embeds: 1.649465560913086
+Time to get segmentation masks: 0.5638892650604248
+Time to merge segments: 33.97933077812195
+Time to get FT and positional embeds: 1.1868305206298828
+Time to get segmentation masks: 0.5442698001861572
+Time to merge segments: 11.387464046478271
+Time to get FT and positional embeds: 1.2971835136413574
+Time to get segmentation masks: 0.5606904029846191
+Time to merge segments: 32.56319737434387
+Time to get FT and positional embeds: 1.5280001163482666
+Time to get segmentation masks: 0.5677127838134766
+Time to merge segments: 11.326407670974731
+Time to get FT and positional embeds: 2.057075262069702
+Time to get segmentation masks: 0.5604078769683838
+Time to merge segments: 16.088736534118652
+Time to get FT and positional embeds: 1.7248930931091309
+Time to get segmentation masks: 0.5505328178405762
+Time to merge segments: 24.603839874267578
+Time to get FT and positional embeds: 1.4117813110351562
+Time to get segmentation masks: 0.5735211372375488
+Time to merge segments: 29.99461603164673
+Time to get FT and positional embeds: 0.9068033695220947
+Epoch: [0]  [   190/160145]  eta: 60 days, 13:38:58  lr: 0.000001  loss: 6.9299 (6.9494)  time: 26.3063  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5624914169311523
+Time to merge segments: 24.471378326416016
+Time to get FT and positional embeds: 1.136760950088501
+Time to get segmentation masks: 0.5632240772247314
+Time to merge segments: 69.53552746772766
+Time to get FT and positional embeds: 0.5351085662841797
+Time to get segmentation masks: 0.5693619251251221
+Time to merge segments: 69.64957666397095
+Time to get FT and positional embeds: 0.5251927375793457
+Time to get segmentation masks: 0.5617902278900146
+Time to merge segments: 33.66904354095459
+Time to get FT and positional embeds: 0.866328239440918
+Time to get segmentation masks: 0.563800573348999
+Time to merge segments: 46.86332726478577
+Time to get FT and positional embeds: 0.8264951705932617
+Time to get segmentation masks: 0.5687055587768555
+Time to merge segments: 33.128976345062256
+Time to get FT and positional embeds: 1.008871078491211
+Time to get segmentation masks: 0.5520331859588623
+Time to merge segments: 29.86244559288025
+Time to get FT and positional embeds: 0.820958137512207
+Time to get segmentation masks: 0.5406665802001953
+Time to merge segments: 43.563896894454956
+Time to get FT and positional embeds: 0.5896403789520264
+Time to get segmentation masks: 0.5703694820404053
+Time to merge segments: 29.83913230895996
+Time to get FT and positional embeds: 1.0529203414916992
+Time to get segmentation masks: 0.557929277420044
+Time to merge segments: 40.32429909706116
+Time to get FT and positional embeds: 0.6675257682800293
+Epoch: [0]  [   200/160145]  eta: 61 days, 13:23:22  lr: 0.000001  loss: 6.9163 (6.9480)  time: 34.6499  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5689024925231934
+Time to merge segments: 26.717156171798706
+Time to get FT and positional embeds: 1.3481268882751465
+Time to get segmentation masks: 0.5526280403137207
+Time to merge segments: 29.643903255462646
+Time to get FT and positional embeds: 1.3561623096466064
+Time to get segmentation masks: 0.6081628799438477
+Time to merge segments: 28.640537977218628
+Time to get FT and positional embeds: 0.8572304248809814
+Time to get segmentation masks: 0.5659551620483398
+Time to merge segments: 25.33931040763855
+Time to get FT and positional embeds: 1.708683967590332
+Time to get segmentation masks: 0.5830364227294922
+Time to merge segments: 46.88868594169617
+Time to get FT and positional embeds: 0.9674968719482422
+Time to get segmentation masks: 0.568779706954956
+Time to merge segments: 37.06945180892944
+Time to get FT and positional embeds: 1.132770299911499
+Time to get segmentation masks: 0.5578558444976807
+Time to merge segments: 60.324100971221924
+Time to get FT and positional embeds: 0.7126114368438721
+Time to get segmentation masks: 0.5675904750823975
+Time to merge segments: 24.2670681476593
+Time to get FT and positional embeds: 1.698533058166504
+Time to get segmentation masks: 0.558112621307373
+Time to merge segments: 25.134960889816284
+Time to get FT and positional embeds: 1.4616577625274658
+Time to get segmentation masks: 0.5537698268890381
+Time to merge segments: 33.95384979248047
+Time to get FT and positional embeds: 1.1071727275848389
+Epoch: [0]  [   210/160145]  eta: 61 days, 18:19:51  lr: 0.000001  loss: 6.9446 (6.9476)  time: 39.5705  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5441322326660156
+Time to merge segments: 30.67867136001587
+Time to get FT and positional embeds: 0.8951990604400635
+Time to get segmentation masks: 0.551182746887207
+Time to merge segments: 37.12077498435974
+Time to get FT and positional embeds: 0.79677414894104
+Time to get segmentation masks: 0.5653371810913086
+Time to merge segments: 30.97294306755066
+Time to get FT and positional embeds: 0.922771692276001
+Time to get segmentation masks: 0.5774900913238525
+Time to merge segments: 5.667674779891968
+Time to get FT and positional embeds: 1.3695850372314453
+Time to get segmentation masks: 0.5761144161224365
+Time to merge segments: 38.19004535675049
+Time to get FT and positional embeds: 1.2205581665039062
+Time to get segmentation masks: 0.55853271484375
+Time to merge segments: 16.652904748916626
+Time to get FT and positional embeds: 1.485959768295288
+Time to get segmentation masks: 0.5696704387664795
+Time to merge segments: 45.83192706108093
+Time to get FT and positional embeds: 1.1096391677856445
+Time to get segmentation masks: 0.5711355209350586
+Time to merge segments: 26.364509344100952
+Time to get FT and positional embeds: 1.4275500774383545
+Time to get segmentation masks: 0.5653491020202637
+Time to merge segments: 26.44662594795227
+Time to get FT and positional embeds: 1.1353497505187988
+Time to get segmentation masks: 0.5670959949493408
+Time to merge segments: 39.75743246078491
+Time to get FT and positional embeds: 0.9719724655151367
+Epoch: [0]  [   220/160145]  eta: 61 days, 14:30:11  lr: 0.000001  loss: 6.9555 (6.9490)  time: 33.5757  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5727460384368896
+Time to merge segments: 30.15465021133423
+Time to get FT and positional embeds: 1.165630578994751
+Time to get segmentation masks: 0.55415940284729
+Time to merge segments: 57.86312437057495
+Time to get FT and positional embeds: 0.5349452495574951
+Time to get segmentation masks: 0.5473902225494385
+Time to merge segments: 37.94368243217468
+Time to get FT and positional embeds: 1.0004220008850098
+Time to get segmentation masks: 0.5593719482421875
+Time to merge segments: 25.181368350982666
+Time to get FT and positional embeds: 1.799379825592041
+Time to get segmentation masks: 0.6100852489471436
+Time to merge segments: 36.70582699775696
+Time to get FT and positional embeds: 0.31271982192993164
+Time to get segmentation masks: 0.5452487468719482
+Time to merge segments: 57.22131323814392
+Time to get FT and positional embeds: 0.6272199153900146
+Time to get segmentation masks: 0.5597865581512451
+Time to merge segments: 28.574960708618164
+Time to get FT and positional embeds: 1.3955426216125488
+Time to get segmentation masks: 0.5633635520935059
+Time to merge segments: 44.16956615447998
+Time to get FT and positional embeds: 0.8084168434143066
+Time to get segmentation masks: 0.5569396018981934
+Time to merge segments: 43.18734431266785
+Time to get FT and positional embeds: 0.6830477714538574
+Time to get segmentation masks: 0.5476553440093994
+Time to merge segments: 33.09213304519653
+Time to get FT and positional embeds: 1.013552188873291
+Epoch: [0]  [   230/160145]  eta: 62 days, 5:08:42  lr: 0.000001  loss: 6.9630 (6.9490)  time: 36.2260  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.5692222118377686
+Time to merge segments: 33.330490827560425
+Time to get FT and positional embeds: 0.8709728717803955
+Time to get segmentation masks: 0.6101279258728027
+Time to merge segments: 22.48167109489441
+Time to get FT and positional embeds: 1.1810271739959717
+Time to get segmentation masks: 0.5576164722442627
+Time to merge segments: 59.00537109375
+Time to get FT and positional embeds: 0.5813572406768799
+Time to get segmentation masks: 0.5440731048583984
+Time to merge segments: 22.48322892189026
+Time to get FT and positional embeds: 0.8928523063659668
+Time to get segmentation masks: 0.5707623958587646
+Time to merge segments: 21.790297508239746
+Time to get FT and positional embeds: 1.4380416870117188
+Time to get segmentation masks: 0.5650136470794678
+Time to merge segments: 39.782697439193726
+Time to get FT and positional embeds: 0.6782057285308838
+Time to get segmentation masks: 0.5654430389404297
+Time to merge segments: 17.715858697891235
+Time to get FT and positional embeds: 1.7237224578857422
+Time to get segmentation masks: 0.5705642700195312
+Time to merge segments: 51.298633337020874
+Time to get FT and positional embeds: 0.8450887203216553
+Time to get segmentation masks: 0.5646665096282959
+Time to merge segments: 39.502567529678345
+Time to get FT and positional embeds: 0.8079078197479248
+Time to get segmentation masks: 0.5598280429840088
+Time to merge segments: 5.977822542190552
+Time to get FT and positional embeds: 1.4935085773468018
+Epoch: [0]  [   240/160145]  eta: 62 days, 3:54:40  lr: 0.000001  loss: 6.9630 (6.9509)  time: 36.9695  data: 0.0001  max mem: 443
+Time to get segmentation masks: 0.6179955005645752
+Time to merge segments: 40.51495409011841
+Time to get FT and positional embeds: 0.6911890506744385
+Time to get segmentation masks: 0.5474421977996826
+Time to merge segments: 39.539841413497925
+Time to get FT and positional embeds: 0.8296988010406494
+Time to get segmentation masks: 0.5610883235931396
+Time to merge segments: 15.516842126846313
+Time to get FT and positional embeds: 1.9802026748657227
+Time to get segmentation masks: 0.5583889484405518
+Time to merge segments: 28.23401641845703
+Time to get FT and positional embeds: 1.4303903579711914
+Time to get segmentation masks: 0.5545518398284912
+Time to merge segments: 33.02366328239441
+Time to get FT and positional embeds: 1.0331847667694092
+Time to get segmentation masks: 0.5674223899841309
+Time to merge segments: 47.88238334655762
+Time to get FT and positional embeds: 1.041236400604248
+Time to get segmentation masks: 0.5746936798095703
+Time to merge segments: 25.077831268310547
+Time to get FT and positional embeds: 1.4728739261627197
+Time to get segmentation masks: 0.5419659614562988
+Time to merge segments: 44.43609857559204
+Time to get FT and positional embeds: 0.8120713233947754
+Time to get segmentation masks: 0.5706112384796143
+Time to merge segments: 3.2555902004241943
+Time to get FT and positional embeds: 2.2453413009643555
+Time to get segmentation masks: 0.5633399486541748
+Time to merge segments: 18.13519263267517
+Time to get FT and positional embeds: 1.302483081817627
+Epoch: [0]  [   250/160145]  eta: 62 days, 0:02:06  lr: 0.000001  loss: 6.9325 (6.9491)  time: 32.2225  data: 0.0001  max mem: 454
+Time to get segmentation masks: 0.5558817386627197
+Time to merge segments: 19.785309314727783
+Time to get FT and positional embeds: 1.5268008708953857
+Time to get segmentation masks: 0.5713446140289307
+Time to merge segments: 40.258097648620605
+Time to get FT and positional embeds: 1.0790157318115234
+Time to get segmentation masks: 0.5726637840270996
+Time to merge segments: 9.022860050201416
+Time to get FT and positional embeds: 2.17797589302063
+Time to get segmentation masks: 0.5566318035125732
+Time to merge segments: 65.16055679321289
+Time to get FT and positional embeds: 0.54331374168396
+Time to get segmentation masks: 0.5648782253265381
+Time to merge segments: 46.92137312889099
+Time to get FT and positional embeds: 0.5803263187408447
+Time to get segmentation masks: 0.5603351593017578
+Time to merge segments: 31.57109308242798
+Time to get FT and positional embeds: 1.2095766067504883
+Time to get segmentation masks: 0.5600094795227051
+Time to merge segments: 38.462322473526
+Time to get FT and positional embeds: 0.9290733337402344
+Time to get segmentation masks: 0.567192554473877
+Time to merge segments: 18.301668405532837
+Time to get FT and positional embeds: 1.692901611328125
+Time to get segmentation masks: 0.5693552494049072
+Time to merge segments: 40.950034856796265
+Time to get FT and positional embeds: 1.0201454162597656
+Time to get segmentation masks: 0.5639660358428955
+Time to merge segments: 31.372644186019897
+Time to get FT and positional embeds: 1.126572847366333
+Epoch: [0]  [   260/160145]  eta: 62 days, 4:08:48  lr: 0.000001  loss: 6.9096 (6.9479)  time: 33.7120  data: 0.0001  max mem: 454
+Time to get segmentation masks: 0.5619637966156006
+Time to merge segments: 29.19470453262329
+Time to get FT and positional embeds: 1.3612072467803955
+Time to get segmentation masks: 0.5694789886474609
+Time to merge segments: 27.549461126327515
+Time to get FT and positional embeds: 1.1741094589233398
+Time to get segmentation masks: 0.5679280757904053
+Time to merge segments: 14.920042991638184
+Time to get FT and positional embeds: 2.0732181072235107
+Time to get segmentation masks: 0.562408447265625
+Time to merge segments: 16.002832174301147
+Time to get FT and positional embeds: 1.6650209426879883
+Time to get segmentation masks: 0.5654277801513672
+Time to merge segments: 20.342669248580933
+Time to get FT and positional embeds: 1.7934472560882568
+Time to get segmentation masks: 0.5597023963928223
+Time to merge segments: 13.828365325927734
+Time to get FT and positional embeds: 1.5576910972595215
+Time to get segmentation masks: 0.559943675994873
+Time to merge segments: 26.333567142486572
+Time to get FT and positional embeds: 0.9902689456939697
+Time to get segmentation masks: 0.5624163150787354
+Time to merge segments: 32.65713167190552
+Time to get FT and positional embeds: 1.3715100288391113
+Time to get segmentation masks: 0.5707170963287354
+Time to merge segments: 34.988240003585815
+Time to get FT and positional embeds: 1.3097412586212158
+Time to get segmentation masks: 0.5558102130889893
+Time to merge segments: 15.55266523361206
+Time to get FT and positional embeds: 1.664466142654419
+Epoch: [0]  [   270/160145]  eta: 61 days, 14:21:02  lr: 0.000001  loss: 6.9291 (6.9476)  time: 30.6047  data: 0.0001  max mem: 454
+Time to get segmentation masks: 0.5660209655761719
+Time to merge segments: 14.98212742805481
+Time to get FT and positional embeds: 2.038743257522583
+Time to get segmentation masks: 0.549370288848877
+Time to merge segments: 31.405181407928467
+Time to get FT and positional embeds: 0.8481462001800537
+Time to get segmentation masks: 0.5824687480926514
+Time to merge segments: 41.16407132148743
+Time to get FT and positional embeds: 0.9139585494995117
+Time to get segmentation masks: 0.5713355541229248
+Time to merge segments: 40.636157751083374
+Time to get FT and positional embeds: 1.3868138790130615
+Time to get segmentation masks: 0.5629379749298096
+Time to merge segments: 20.353312253952026
+Time to get FT and positional embeds: 1.417457103729248
+Time to get segmentation masks: 0.5445601940155029
+Time to merge segments: 32.85657501220703
+Time to get FT and positional embeds: 0.8005504608154297
+Time to get segmentation masks: 0.5727832317352295
+Time to merge segments: 44.28321814537048
+Time to get FT and positional embeds: 1.1585361957550049
+Time to get segmentation masks: 0.5492186546325684
+Time to merge segments: 39.842541456222534
+Time to get FT and positional embeds: 0.7580907344818115
+Time to get segmentation masks: 0.5724785327911377
+Time to merge segments: 8.716259002685547
+Time to get FT and positional embeds: 1.6078922748565674
+Time to get segmentation masks: 0.5804822444915771
+Time to merge segments: 19.895946979522705
+Time to get FT and positional embeds: 1.2790093421936035
+Epoch: [0]  [   280/160145]  eta: 61 days, 11:00:59  lr: 0.000001  loss: 6.9367 (6.9464)  time: 28.2366  data: 0.0001  max mem: 454
+Time to get segmentation masks: 0.5618977546691895
+Time to merge segments: 28.618587970733643
+Time to get FT and positional embeds: 0.9777698516845703
+Time to get segmentation masks: 0.5587306022644043
+Time to merge segments: 51.989623069763184
+Time to get FT and positional embeds: 0.6651756763458252
+Time to get segmentation masks: 0.5723094940185547
+Time to merge segments: 28.64877700805664
+Time to get FT and positional embeds: 1.1621253490447998
+Time to get segmentation masks: 0.5712132453918457
+Time to merge segments: 23.488120555877686
+Time to get FT and positional embeds: 2.140507221221924
+Time to get segmentation masks: 0.5616967678070068
+Time to merge segments: 11.669870615005493
+Time to get FT and positional embeds: 1.774977445602417
+Time to get segmentation masks: 0.565626859664917
+Time to merge segments: 22.5962233543396
+Time to get FT and positional embeds: 1.3372907638549805
+Time to get segmentation masks: 0.5694553852081299
+Time to merge segments: 52.123422145843506
+Time to get FT and positional embeds: 0.8578550815582275
+Time to get segmentation masks: 0.5563411712646484
+Time to merge segments: 44.242027759552
+Time to get FT and positional embeds: 0.5466701984405518
+Time to get segmentation masks: 0.569148063659668
+Time to merge segments: 26.27823233604431
+Time to get FT and positional embeds: 0.9767930507659912
+Time to get segmentation masks: 0.582683801651001
+Time to merge segments: 20.198206663131714
+Time to get FT and positional embeds: 1.5356354713439941
+Epoch: [0]  [   290/160145]  eta: 61 days, 10:16:27  lr: 0.000001  loss: 6.9447 (6.9471)  time: 32.0137  data: 0.0001  max mem: 454
+Time to get segmentation masks: 0.5583126544952393
+Time to merge segments: 27.556641101837158
+Time to get FT and positional embeds: 1.7248477935791016
+Time to get segmentation masks: 0.5528116226196289
+Time to merge segments: 17.477871656417847
+Time to get FT and positional embeds: 1.389939308166504
+Time to get segmentation masks: 0.5652687549591064
+Time to merge segments: 34.71305584907532
+Time to get FT and positional embeds: 1.192751407623291
+Time to get segmentation masks: 0.5630536079406738
+Time to merge segments: 53.793856143951416
+Time to get FT and positional embeds: 0.9718213081359863
+Time to get segmentation masks: 0.5527153015136719
+Time to merge segments: 40.286184549331665
+Time to get FT and positional embeds: 0.737586259841919
+Time to get segmentation masks: 0.5738704204559326
+Time to merge segments: 59.596333265304565
+Time to get FT and positional embeds: 0.7195446491241455
+Time to get segmentation masks: 0.5732123851776123
+Time to merge segments: 17.820942640304565
+Time to get FT and positional embeds: 1.237513542175293
+Time to get segmentation masks: 0.5703327655792236
+Time to merge segments: 36.19630837440491
+Time to get FT and positional embeds: 1.2071971893310547
+Time to get segmentation masks: 0.5606460571289062
+Time to merge segments: 27.675907611846924
+Time to get FT and positional embeds: 0.9595382213592529
+Time to get segmentation masks: 0.5665388107299805
+Time to merge segments: 55.293546199798584
+Time to get FT and positional embeds: 0.7813355922698975
+Epoch: [0]  [   300/160145]  eta: 61 days, 18:20:56  lr: 0.000001  loss: 6.9447 (6.9460)  time: 35.7638  data: 0.0001  max mem: 454
+Time to get segmentation masks: 0.5562331676483154
+Time to merge segments: 63.33314776420593
+Time to get FT and positional embeds: 0.45099902153015137
+Time to get segmentation masks: 0.5893030166625977
+Time to merge segments: 24.620837211608887
+Time to get FT and positional embeds: 0.9404456615447998
+Time to get segmentation masks: 0.5589747428894043
+Time to merge segments: 24.179380893707275
+Time to get FT and positional embeds: 0.9429798126220703
+Time to get segmentation masks: 0.5775446891784668
+Time to merge segments: 31.180834770202637
+Time to get FT and positional embeds: 1.0713541507720947
+Time to get segmentation masks: 0.5638301372528076
+Time to merge segments: 31.592609167099
+Time to get FT and positional embeds: 0.9856481552124023
+Time to get segmentation masks: 0.5684695243835449
+Time to merge segments: 27.027868509292603
+Time to get FT and positional embeds: 1.3848209381103516
+Time to get segmentation masks: 0.5725173950195312
+Time to merge segments: 35.10367202758789
+Time to get FT and positional embeds: 1.5343403816223145
+Time to get segmentation masks: 0.555548906326294
+Time to merge segments: 22.83154296875
+Time to get FT and positional embeds: 1.3371024131774902
+Time to get segmentation masks: 0.552147388458252
+Time to merge segments: 16.557754039764404
+Time to get FT and positional embeds: 1.7367839813232422
+Time to get segmentation masks: 0.5663902759552002
+Time to merge segments: 17.023003578186035
+Time to get FT and positional embeds: 2.0863609313964844
+Epoch: [0]  [   310/160145]  eta: 61 days, 15:08:02  lr: 0.000001  loss: 6.9292 (6.9450)  time: 34.9679  data: 0.0001  max mem: 454
+Time to get segmentation masks: 0.5618305206298828
+Time to merge segments: 15.699678897857666
+Time to get FT and positional embeds: 1.223963737487793
+Time to get segmentation masks: 0.5509324073791504
+Time to merge segments: 38.59532880783081
+Time to get FT and positional embeds: 1.0690977573394775
+Time to get segmentation masks: 0.5581746101379395
+Time to merge segments: 50.455867767333984
+Time to get FT and positional embeds: 0.9236228466033936
+Time to get segmentation masks: 0.5545709133148193
+Time to merge segments: 43.483808279037476
+Time to get FT and positional embeds: 0.6856799125671387
+Time to get segmentation masks: 0.566260576248169
+Time to merge segments: 22.53184938430786
+Time to get FT and positional embeds: 1.49973464012146
+Time to get segmentation masks: 0.571195125579834
+Time to merge segments: 32.54256558418274
+Time to get FT and positional embeds: 1.3031818866729736
+Time to get segmentation masks: 0.5609025955200195
+Time to merge segments: 25.895880699157715
+Time to get FT and positional embeds: 1.219578742980957
+Time to get segmentation masks: 0.5699396133422852
+Time to merge segments: 46.613006591796875
+Time to get FT and positional embeds: 1.0769855976104736
+Time to get segmentation masks: 0.5702846050262451
+Time to merge segments: 46.70912003517151
+Time to get FT and positional embeds: 0.8052709102630615
+Time to get segmentation masks: 0.5676791667938232
+Time to merge segments: 12.227771997451782
+Time to get FT and positional embeds: 1.9133899211883545
+Epoch: [0]  [   320/160145]  eta: 61 days, 17:42:58  lr: 0.000001  loss: 6.9722 (6.9472)  time: 33.2236  data: 0.0001  max mem: 454
+Time to get segmentation masks: 0.5685882568359375
+Time to merge segments: 53.55005764961243
+Time to get FT and positional embeds: 0.3524491786956787
+Time to get segmentation masks: 0.5660457611083984
+Time to merge segments: 33.18582487106323
+Time to get FT and positional embeds: 1.4487745761871338
+Time to get segmentation masks: 0.5425994396209717
+Time to merge segments: 27.904471158981323
+Time to get FT and positional embeds: 0.6415054798126221
+Time to get segmentation masks: 0.5768699645996094
+Time to merge segments: 35.92434811592102
+Time to get FT and positional embeds: 0.766413688659668
+Time to get segmentation masks: 0.5350837707519531
+Time to merge segments: 56.29795289039612
+Time to get FT and positional embeds: 0.39153623580932617
+Time to get segmentation masks: 0.5502450466156006
+Time to merge segments: 30.35394048690796
+Time to get FT and positional embeds: 1.437666654586792
+Time to get segmentation masks: 0.5588099956512451
+Time to merge segments: 40.76297473907471
+Time to get FT and positional embeds: 0.7405695915222168
+Time to get segmentation masks: 0.5737717151641846
+Time to merge segments: 23.942275285720825
+Time to get FT and positional embeds: 0.9086081981658936
+Time to get segmentation masks: 0.5646450519561768
+Time to merge segments: 10.987607479095459
+Time to get FT and positional embeds: 1.985048532485962
+Time to get segmentation masks: 0.5491757392883301
+Time to merge segments: 40.15355205535889
+Time to get FT and positional embeds: 1.015010118484497
+Epoch: [0]  [   330/160145]  eta: 61 days, 22:18:57  lr: 0.000001  loss: 7.0020 (6.9461)  time: 36.0613  data: 0.0001  max mem: 454
+Time to get segmentation masks: 0.5722935199737549
+Time to merge segments: 23.5349338054657
+Time to get FT and positional embeds: 1.5024206638336182
+Time to get segmentation masks: 0.5635907649993896
+Time to merge segments: 43.28738856315613
+Time to get FT and positional embeds: 0.7506918907165527
+Time to get segmentation masks: 0.5649826526641846
+Time to merge segments: 32.75103759765625
+Time to get FT and positional embeds: 1.0335135459899902
+Time to get segmentation masks: 0.5679376125335693
+Time to merge segments: 47.419832706451416
+Time to get FT and positional embeds: 1.1140751838684082
+Time to get segmentation masks: 0.5515353679656982
+Time to merge segments: 30.189834356307983
+Time to get FT and positional embeds: 1.3694770336151123
+Time to get segmentation masks: 0.5658164024353027
+Time to merge segments: 19.824317693710327
+Time to get FT and positional embeds: 1.598952293395996
+Time to get segmentation masks: 0.5579135417938232
+Time to merge segments: 45.86080265045166
+Time to get FT and positional embeds: 0.869786262512207
+Time to get segmentation masks: 0.5632667541503906
+Time to merge segments: 40.395546436309814
+Time to get FT and positional embeds: 1.346416711807251
+Time to get segmentation masks: 0.5426409244537354
+Time to merge segments: 37.97347664833069
+Time to get FT and positional embeds: 0.8379809856414795
+Time to get segmentation masks: 0.5729544162750244
+Time to merge segments: 23.770427465438843
+Time to get FT and positional embeds: 1.376004695892334
+Epoch: [0]  [   340/160145]  eta: 62 days, 1:51:51  lr: 0.000001  loss: 6.9239 (6.9461)  time: 36.5759  data: 0.0001  max mem: 454
+Time to get segmentation masks: 0.5511457920074463
+Time to merge segments: 30.5493426322937
+Time to get FT and positional embeds: 1.3919427394866943
+Time to get segmentation masks: 0.5826385021209717
+Time to merge segments: 38.74159240722656
+Time to get FT and positional embeds: 1.0995728969573975
+Time to get segmentation masks: 0.5582945346832275
+Time to merge segments: 26.383697032928467
+Time to get FT and positional embeds: 1.0428063869476318
+Time to get segmentation masks: 0.5578632354736328
+Time to merge segments: 24.95022988319397
+Time to get FT and positional embeds: 0.9606316089630127
+Time to get segmentation masks: 0.5651848316192627
+Time to merge segments: 20.214240312576294
+Time to get FT and positional embeds: 1.2942240238189697
+Time to get segmentation masks: 0.5654222965240479
+Time to merge segments: 25.927651405334473
+Time to get FT and positional embeds: 1.4415109157562256
+Time to get segmentation masks: 0.5626273155212402
+Time to merge segments: 25.140682458877563
+Time to get FT and positional embeds: 1.400538682937622
+Time to get segmentation masks: 0.5660812854766846
+Time to merge segments: 27.592138290405273
+Time to get FT and positional embeds: 1.0487985610961914
+Time to get segmentation masks: 0.5598642826080322
+Time to merge segments: 50.77851152420044
+Time to get FT and positional embeds: 0.6051645278930664
+Time to get segmentation masks: 0.5700695514678955
+Time to merge segments: 37.44473576545715
+Time to get FT and positional embeds: 1.0573077201843262
+Epoch: [0]  [   350/160145]  eta: 62 days, 0:25:58  lr: 0.000001  loss: 6.9870 (6.9478)  time: 34.3914  data: 0.0001  max mem: 454
+Time to get segmentation masks: 0.544438362121582
+Time to merge segments: 30.93175172805786
+Time to get FT and positional embeds: 1.2902960777282715
+Time to get segmentation masks: 0.5703995227813721
+Time to merge segments: 30.58452010154724
+Time to get FT and positional embeds: 1.4758961200714111
+Time to get segmentation masks: 0.5676925182342529
+Time to merge segments: 34.81848454475403
+Time to get FT and positional embeds: 1.3265457153320312
+Time to get segmentation masks: 0.553856611251831
+Time to merge segments: 28.13773488998413
+Time to get FT and positional embeds: 1.1107125282287598
+Time to get segmentation masks: 0.5546066761016846
+Time to merge segments: 28.902101278305054
+Time to get FT and positional embeds: 1.1669890880584717
+Time to get segmentation masks: 0.5669891834259033
+Time to merge segments: 26.152378797531128
+Time to get FT and positional embeds: 1.4127488136291504
+Time to get segmentation masks: 0.5570423603057861
+Time to merge segments: 17.517362594604492
+Time to get FT and positional embeds: 1.3090205192565918
+Time to get segmentation masks: 0.541513204574585
+Time to merge segments: 34.15025591850281
+Time to get FT and positional embeds: 0.8712162971496582
+Time to get segmentation masks: 0.5466485023498535
+Time to merge segments: 39.35352039337158
+Time to get FT and positional embeds: 0.609306812286377
+Time to get segmentation masks: 0.5667636394500732
+Time to merge segments: 54.25790619850159
+Time to get FT and positional embeds: 0.47731733322143555
+Epoch: [0]  [   360/160145]  eta: 62 days, 1:07:51  lr: 0.000001  loss: 6.9759 (6.9475)  time: 33.3405  data: 0.0001  max mem: 454
+Time to get segmentation masks: 0.5818154811859131
+Time to merge segments: 17.259053707122803
+Time to get FT and positional embeds: 1.1299638748168945
+Time to get segmentation masks: 0.6054332256317139
+Time to merge segments: 37.27788710594177
+Time to get FT and positional embeds: 0.7373371124267578
+Time to get segmentation masks: 0.552668571472168
+Time to merge segments: 18.125918865203857
+Time to get FT and positional embeds: 1.532259464263916
+Time to get segmentation masks: 0.5624969005584717
+Time to merge segments: 20.01314353942871
+Time to get FT and positional embeds: 1.7314567565917969
+Time to get segmentation masks: 0.562002420425415
+Time to merge segments: 29.396902322769165
+Time to get FT and positional embeds: 1.341517448425293
+Time to get segmentation masks: 0.5627434253692627
+Time to merge segments: 25.995609760284424
+Time to get FT and positional embeds: 1.4468584060668945
+Time to get segmentation masks: 0.5662813186645508
+Time to merge segments: 36.29750871658325
+Time to get FT and positional embeds: 1.1063072681427002
+Time to get segmentation masks: 0.5653200149536133
+Time to merge segments: 36.215413331985474
+Time to get FT and positional embeds: 0.9948127269744873
+Time to get segmentation masks: 0.5667133331298828
+Time to merge segments: 14.334612369537354
+Time to get FT and positional embeds: 1.7584235668182373
+Time to get segmentation masks: 0.546797513961792
+Time to merge segments: 26.921791076660156
+Time to get FT and positional embeds: 0.9954440593719482
+Epoch: [0]  [   370/160145]  eta: 61 days, 18:28:20  lr: 0.000001  loss: 6.9623 (6.9490)  time: 31.1192  data: 0.0001  max mem: 454
+Time to get segmentation masks: 0.5862879753112793
+Time to merge segments: 45.09648585319519
+Time to get FT and positional embeds: 0.6012983322143555
+Time to get segmentation masks: 0.5695703029632568
+Time to merge segments: 18.296128749847412
+Time to get FT and positional embeds: 1.6099374294281006
+Time to get segmentation masks: 0.5551760196685791
+Time to merge segments: 17.239641189575195
+Time to get FT and positional embeds: 1.3452746868133545
+Time to get segmentation masks: 0.566417932510376
+Time to merge segments: 46.24082064628601
+Time to get FT and positional embeds: 1.2087137699127197
+Time to get segmentation masks: 0.5593266487121582
+Time to merge segments: 35.14492225646973
+Time to get FT and positional embeds: 1.1897130012512207
+Time to get segmentation masks: 0.5580461025238037
+Time to merge segments: 31.080482959747314
+Time to get FT and positional embeds: 1.284515380859375
+Time to get segmentation masks: 0.5676534175872803
+Time to merge segments: 55.66762042045593
+Time to get FT and positional embeds: 0.7166643142700195
+Time to get segmentation masks: 0.5736081600189209
+Time to merge segments: 30.98734164237976
+Time to get FT and positional embeds: 0.7027966976165771
+Time to get segmentation masks: 0.567328691482544
+Time to merge segments: 39.804566860198975
+Time to get FT and positional embeds: 0.8482959270477295
+Time to get segmentation masks: 0.5669081211090088
+Time to merge segments: 21.79056739807129
+Time to get FT and positional embeds: 1.6222038269042969
+Epoch: [0]  [   380/160145]  eta: 61 days, 21:14:03  lr: 0.000001  loss: 6.9990 (6.9493)  time: 31.9578  data: 0.0001  max mem: 454
+Time to get segmentation masks: 0.5629079341888428
+Time to merge segments: 48.381351709365845
+Time to get FT and positional embeds: 0.4353508949279785
+Time to get segmentation masks: 0.5710735321044922
+Time to merge segments: 62.08670997619629
+Time to get FT and positional embeds: 0.47612619400024414
+Time to get segmentation masks: 0.5575370788574219
+Time to merge segments: 28.136433362960815
+Time to get FT and positional embeds: 1.0943210124969482
+Time to get segmentation masks: 0.5641927719116211
+Time to merge segments: 13.254791259765625
+Time to get FT and positional embeds: 1.887760877609253
+Time to get segmentation masks: 0.5680129528045654
+Time to merge segments: 43.225088119506836
+Time to get FT and positional embeds: 0.9647181034088135
+Time to get segmentation masks: 0.5638589859008789
+Time to merge segments: 22.294665813446045
+Time to get FT and positional embeds: 1.7534387111663818
+Time to get segmentation masks: 0.5765256881713867
+Time to merge segments: 33.98037004470825
+Time to get FT and positional embeds: 0.8838248252868652
+Time to get segmentation masks: 0.6110641956329346
+Time to merge segments: 22.81503915786743
+Time to get FT and positional embeds: 1.363314151763916
+Time to get segmentation masks: 0.5746643543243408
+Time to merge segments: 66.10953688621521
+Time to get FT and positional embeds: 0.4754605293273926
+Time to get segmentation masks: 0.5564060211181641
+Time to merge segments: 17.94432759284973
+Time to get FT and positional embeds: 1.367096185684204
+Epoch: [0]  [   390/160145]  eta: 62 days, 1:43:13  lr: 0.000001  loss: 6.9488 (6.9485)  time: 36.6775  data: 0.0001  max mem: 454
+Time to get segmentation masks: 0.5637862682342529
+Time to merge segments: 23.263631582260132
+Time to get FT and positional embeds: 1.4027259349822998
+Time to get segmentation masks: 0.562523365020752
+Time to merge segments: 48.19168043136597
+Time to get FT and positional embeds: 0.7967696189880371
+Time to get segmentation masks: 0.5700161457061768
+Time to merge segments: 23.3875572681427
+Time to get FT and positional embeds: 1.105639934539795
+Time to get segmentation masks: 0.5656652450561523
+Time to merge segments: 32.89034628868103
+Time to get FT and positional embeds: 1.3332180976867676
+Time to get segmentation masks: 0.5721678733825684
+Time to merge segments: 20.585662126541138
+Time to get FT and positional embeds: 1.6952481269836426
+Time to get segmentation masks: 0.5708603858947754
+Time to merge segments: 21.47548508644104
+Time to get FT and positional embeds: 1.4398548603057861
+Time to get segmentation masks: 0.563971996307373
+Time to merge segments: 47.397791624069214
+Time to get FT and positional embeds: 0.8077888488769531
+Time to get segmentation masks: 0.5622889995574951
+Time to merge segments: 20.762656450271606
+Time to get FT and positional embeds: 1.751582384109497
+Time to get segmentation masks: 0.6057155132293701
+Time to merge segments: 24.815247058868408
+Time to get FT and positional embeds: 1.383836269378662
