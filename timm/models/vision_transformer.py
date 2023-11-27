@@ -308,7 +308,7 @@ class SegmentEmbed(nn.Module):
         for i, img in enumerate(x):
             seg_mask = save_mask[i]
 
-            num_segs = np.max(np.unique(seg_mask)) + 1
+            num_segs = len(np.unique(seg_mask))
             # print(f"Image: {i} | Segments: {num_segs}")
             assert (
                 num_segs >= num_tokens
@@ -335,12 +335,12 @@ class SegmentEmbed(nn.Module):
                 merge_seg = np.random.choice(filtered_bneighbors) # randomly pick a segment
                 seg_mask[seg_mask == smallest_seg] = merge_seg # merge them
 
-                # Relabel mask & save
-                seg_mask = (skimage.segmentation.relabel_sequential(seg_mask.astype(int)))[0]
-                save_mask[i] = seg_mask
-
                 # Update termination condition
-                num_segs = np.max(np.unique(seg_mask.flatten())) + 1
+                num_segs = len(np.unique(seg_mask.flatten()))
+            
+            # Save
+            seg_mask = (skimage.segmentation.relabel_sequential(seg_mask.astype(int)))[0]
+            save_mask[i] = seg_mask
 
         print(f"Time to merge segments: {time.time() - start_time}")
         # Create save tensors based on num_tokens
