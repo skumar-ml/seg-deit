@@ -1,3 +1,3 @@
-CUDA_VISIBLE_DEVICES=0,1 nohup python3 train.py \
---model='segvit_tiny' --data-path='~/../../data/sb56/data/Imagenet/' --output_dir='outputs/' --num_tokens=-1 --segmentation="felz" --batch-size=16 \
- > logs/seg_vit_test2.log 2>&1 &
+CUDA_VISIBLE_DEVICES=0 nohup python3 train.py \
+--model='segvit_tiny' --output_dir='outputs/' --num_tokens=196 --segmentation="slic" --batch-size=256 --data-set='CIFAR' --data-path='/home/sk138/data/' \
+ > logs/timing_test_singleGPU.log 2>&1 &

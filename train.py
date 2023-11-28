@@ -469,7 +469,7 @@ def main(args):
 
     model.to(device)
     # TODO: If device is more than one GPU, then use DataParallel
-    # model = torch.nn.DataParallel(model)
+    model = torch.nn.DataParallel(model)
 
     # EMA model
     model_ema = None
@@ -557,6 +557,7 @@ def main(args):
     start_time = time.time()
     max_accuracy = 0.0
     for epoch in range(args.start_epoch, args.epochs):
+
         train_stats = train_one_epoch(
             model,
             criterion,

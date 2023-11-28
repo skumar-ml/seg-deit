@@ -253,6 +253,8 @@ class SegmentEmbed(nn.Module):
         n_points=64,
         num_tokens=196,
         embed_dim=768,
+        pad_embed_freq=None,
+        pad_embed_pos=None
     ):
         super().__init__()
         self.segmentation = (
@@ -261,11 +263,14 @@ class SegmentEmbed(nn.Module):
         self.grayscale = grayscale  # if FT should be taken with grayscale image, or RGB
         self.n_points = n_points  # N-point in FFT
         self.num_tokens = num_tokens  # number of segments to create from image
+        self.pad_embed_freq = pad_embed_freq 
+        self.pad_embed_pos = pad_embed_pos
 
         self.proj_freq = nn.Linear(self.n_points * self.n_points * 2, embed_dim, device='cuda')
-        self.proj_pos = nn.Linear(5, embed_dim, device='cuda')
+        self.proj_pos = nn.Linear(5, embed_dim, device='cuda')        
 
     def forward(self, x):
+        init_time = time.time()
         B, C, H, W = x.shape
         x = x.permute(0, 2, 3, 1) # Change channels to be last dimension
         # print(f"Batch shape is: {x.shape}")
@@ -285,125 +290,75 @@ class SegmentEmbed(nn.Module):
                 save_mask[i, :, :] = segmentation_mask
 
             elif self.segmentation == "slic":
-                segmentation_mask = skimage.segmentation.slic(cp_img, n_segments=196, start_label=0)
+                segmentation_mask = skimage.segmentation.slic(cp_img, n_segments=self.num_tokens, start_label=0)
                 save_mask[i, :, :] = segmentation_mask
             else:
                 raise ValueError(f"segmentation was set to an invalid method")
 
         print(f"Time to get segmentation masks: {time.time() - start_time}")
 
-        # Globally consistent number of tokens in image
-        if self.num_tokens > 0:
-            # print("Using global consistency for number of tokens")
-            num_tokens = self.num_tokens
-        # Batch-consistent number of tokens in image
-        else:
-            # print("Using batch consistency for number of tokens")
-            # Flatten save_mask. Then find max segment value for each image. Take minimum across all images. Add 1 because of zero-based indexing
-            num_tokens = int(np.min(np.max(save_mask.reshape(save_mask.shape[0], -1), axis=1)) + 1)  
-
-        # print(f"Number of tokens that will be enforced is: {num_tokens}")
-        #### Merge segments to match consistency for batched execution ####
-        start_time = time.time()
-        for i, img in enumerate(x):
-            seg_mask = save_mask[i]
-
-            num_segs = len(np.unique(seg_mask))
-            # print(f"Image: {i} | Segments: {num_segs}")
-            assert (
-                num_segs >= num_tokens
-            ), f"Number of segments in image ({num_segs}) is less than the number of tokens required ({num_tokens}). Please lower the number of tokens or increase segmentation granularity."
-
-            while num_segs > num_tokens:
-                # Find smallest segment
-                unique_values, counts = np.unique(seg_mask.flatten(), return_counts=True)
-                smallest_seg = unique_values[np.argmin(counts)]
-
-                # Find neighbors. Only check for smallest_seg
-                vs_right = np.vstack([seg_mask[:,:-1].ravel(), seg_mask[:,1:].ravel()])
-                vs_below = np.vstack([seg_mask[:-1,:].ravel(), seg_mask[1:,:].ravel()])
-                bneighbors = np.unique(np.hstack([vs_right, vs_below]), axis=1)
-
-                include_mask = np.any(bneighbors == smallest_seg, axis=0) # Create a boolean mask indicating columns that include the specific value
-                filtered_bneighbors = bneighbors[:, include_mask] # Extract the columns that include the specific value
-
-                # Get unique IDs and remove smallest segment ID
-                filtered_bneighbors = np.unique(filtered_bneighbors.flatten())
-                filtered_bneighbors = filtered_bneighbors[filtered_bneighbors != smallest_seg]
-
-                # Pick a segment and merge
-                merge_seg = np.random.choice(filtered_bneighbors) # randomly pick a segment
-                seg_mask[seg_mask == smallest_seg] = merge_seg # merge them
-
-                # Update termination condition
-                num_segs = len(np.unique(seg_mask.flatten()))
-            
-            # Save
-            seg_mask = (skimage.segmentation.relabel_sequential(seg_mask.astype(int)))[0]
-            save_mask[i] = seg_mask
-
-        print(f"Time to merge segments: {time.time() - start_time}")
-        # Create save tensors based on num_tokens
-        seg_out = torch.zeros((B, num_tokens, self.n_points * self.n_points * 2), device='cuda')
-        pos_out = torch.zeros((B, num_tokens, 5), device='cuda')  # (height, width), (location x,y), area all from [0, 1] -- NOTE: Assuming static positional embeddings for now
-
-        # For each segment in each image, get FT and positional embedding
+        seg_out = torch.zeros((B, self.num_tokens, self.n_points * self.n_points * 2), device='cuda')
+        pos_out = torch.zeros((B, self.num_tokens, 5), device='cuda')
+        
+        # For each segment in each image, get FT and positional embedding +++ Enforce global consistency of segmentation labels -- pad if not enough tokens, truncate if too many
+        # TODO: Vectorize
         start_time = time.time()
         for j, img in enumerate(x):
-            # print(j)
+
             unique_integers = np.unique(save_mask[j], return_counts=True)
-            # print(unique_integers)
+            
+            # Iterate over number of tokens we want
+            for i in range(self.num_tokens):                    
+                    # If token ID not in mask, we must set to [PAD]
+                    if i not in unique_integers[0]:
+                        seg_out[j, i, :] = self.pad_embed_freq
+                        pos_out[j, i, :] = self.pad_embed_pos
 
-            for i, unique_int in enumerate(unique_integers[0]):
-                    # TODO: experiment with taking FT of each channel differently vs. only taking grayscale) -- add argument to specify
-                    # Get each segment and take FT. Unroll and save
-                    binary_mask = (save_mask[j] == unique_int)
-                    segmented_img = img * np.expand_dims(binary_mask, axis=-1)
+                    # Else, token exists and we must extract freq content & positional embeddings
+                    else:                        
+                        # TODO: experiment with taking FT of each channel differently vs. only taking grayscale) -- add argument to specify
+                        # Get each segment and take FT. Unroll and save
+                        binary_mask = (save_mask[j] == i)
+                        segmented_img = img * np.expand_dims(binary_mask, axis=-1)
 
-                    # Convert to grayscale if specified and image is RGB
-                    if self.grayscale:
-                        cp_img = cv2.cvtColor(segmented_img, cv2.COLOR_BGR2GRAY)
+                        # Convert to grayscale if specified
+                        if self.grayscale:
+                            cp_img = cv2.cvtColor(segmented_img, cv2.COLOR_BGR2GRAY)
 
-                    # Take FT
-                    fourier_transform = np.fft.fft2(cp_img, s=(self.n_points, self.n_points)) #TODO: Change to rfft2 and reduce dims to optimize (as input is always real)
-                    # fourier_transform_shifted = np.fft.fftshift(fourier_transform)
+                        # Take FT
+                        fourier_transform = np.fft.fft2(cp_img, s=(self.n_points, self.n_points)) #TODO: Change to rfft2 and reduce dims to optimize (as input is always real)
 
-                    # Extract magnitude and phase information
-                    magnitude = np.abs(fourier_transform)
-                    phase = np.angle(fourier_transform)
+                        # Extract magnitude and phase information
+                        magnitude = np.abs(fourier_transform)
+                        phase = np.angle(fourier_transform)
 
-                    # Save FT info
-                    to_save = np.stack((magnitude, phase)).flatten(order="F")                    
-                    assert to_save.shape[0] == seg_out.shape[2]
-                    seg_out[j, i, :] = torch.from_numpy(to_save).to('cuda')  # TODO: make this device (how does this work with DataParallel)
+                        # Save FT info
+                        to_save = np.stack((magnitude, phase)).flatten(order="F")                    
+                        assert to_save.shape[0] == seg_out.shape[2]
+                        seg_out[j, i, :] = torch.from_numpy(to_save).to('cuda')  # TODO: make this device (how does this work with DataParallel)
 
-                    #### Get position embedding info (static) TODO: Verify implementation ####
-                    # Area
-                    area = np.sum(binary_mask) / binary_mask.size
+                        #### Get position embedding info (static) TODO: Verify implementation ####
+                        # Area
+                        area = np.sum(binary_mask) / binary_mask.size
 
-                    # Center (Average)
-                    center_x = np.average(np.where(binary_mask)[1]) / binary_mask.shape[1]
-                    center_y = np.average(np.where(binary_mask)[0]) / binary_mask.shape[0]
+                        # Center (Average)
+                        center_x = np.average(np.where(binary_mask)[1]) / binary_mask.shape[1]
+                        center_y = np.average(np.where(binary_mask)[0]) / binary_mask.shape[0]
 
-                    # Width/Height
-                    # print(np.where(binary_mask)[1].shape)
-                    width = (np.max(np.where(binary_mask)[1]) - np.min(np.where(binary_mask)[1])) / binary_mask.shape[1]
-                    height = (np.max(np.where(binary_mask)[0]) - np.min(np.where(binary_mask)[0])) / binary_mask.shape[0]
+                        # Width/Height
+                        # print(np.where(binary_mask)[1].shape)
+                        width = (np.max(np.where(binary_mask)[1]) - np.min(np.where(binary_mask)[1])) / binary_mask.shape[1]
+                        height = (np.max(np.where(binary_mask)[0]) - np.min(np.where(binary_mask)[0])) / binary_mask.shape[0]
 
-                    # print(area, area.shape)
-                    # print(center_x, center_x.shape)
-                    # print(center_y, center_y.shape)
-                    # print(width, width.shape)
-                    # print(height, height.shape)
-
-                    # Store in array and convert to tensor on device
-                    pos_save = torch.from_numpy(np.array([area, center_x, center_y, width, height])) #TODO: make this device (how does this work with DataParallel)
-                    pos_out[j, i, :] = pos_save.to('cuda')
+                        # Store in array and convert to tensor on device
+                        pos_save = torch.from_numpy(np.array([area, center_x, center_y, width, height])) #TODO: make this device (how does this work with DataParallel)
+                        pos_out[j, i, :] = pos_save.to('cuda')
 
         print(f"Time to get FT and positional embeds: {time.time() - start_time}")
-        # Add a linear proj layer
+        # Add a linear proj layer        
         out = self.proj_freq(seg_out) + self.proj_pos(pos_out)
 
+        print(f"Total time spent in SegmentEmbed: {time.time() - init_time}")
         return out
 
 
@@ -472,9 +427,16 @@ class SegVisionTransformer(nn.Module):
     ):
         super().__init__()
         self.num_classes = num_classes
-        self.num_features = (
-            self.embed_dim
-        ) = embed_dim  # num_features for consistency with other models
+        self.num_features = self.embed_dim = embed_dim  # num_features for consistency with other models
+
+        self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
+
+        #TODO: Check [PAD] implementation - specifically that it is updating in SegmentEmbed
+        self.pad_embed_freq = nn.Parameter(torch.zeros((1, 1, n_points * n_points * 2))) # This is the [PAD] token's freq content
+        self.pad_embed_pos = nn.Parameter(torch.zeros((1, 1, 5))) # This is the [PAD] token's pos content
+
+        # self.pos_embed = nn.Parameter(torch.zeros(1, num_patches + 1, embed_dim))
+        self.pos_drop = nn.Dropout(p=drop_rate)
 
         self.patch_embed = SegmentEmbed(
             segmentation=segmentation,
@@ -482,11 +444,9 @@ class SegVisionTransformer(nn.Module):
             n_points=n_points,
             num_tokens=num_tokens,
             embed_dim=embed_dim,
+            pad_embed_freq=self.pad_embed_freq,
+            pad_embed_pos=self.pad_embed_pos
         )
-
-        self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
-        # self.pos_embed = nn.Parameter(torch.zeros(1, num_patches + 1, embed_dim))
-        self.pos_drop = nn.Dropout(p=drop_rate)
 
         dpr = [
             x.item() for x in torch.linspace(0, drop_path_rate, depth)
@@ -520,6 +480,8 @@ class SegVisionTransformer(nn.Module):
 
         # trunc_normal_(self.pos_embed, std=0.02)
         trunc_normal_(self.cls_token, std=0.02)
+        trunc_normal_(self.pad_embed_freq, std=0.02)
+        trunc_normal_(self.pad_embed_pos, std=0.02)
         self.apply(self._init_weights)
 
     def _init_weights(self, m):
@@ -545,9 +507,9 @@ class SegVisionTransformer(nn.Module):
         )
 
     def forward_features(self, x):
+        feature_time = time.time()
         B = x.shape[0]
         x = self.patch_embed(x)
-
         cls_tokens = self.cls_token.expand(
             B, -1, -1
         )  # stole cls_tokens impl from Phil Wang, thanks
@@ -562,8 +524,13 @@ class SegVisionTransformer(nn.Module):
         return x[:, 0]
 
     def forward(self, x):
-        x = self.forward_features(x)
+        feature_time = time.time()
+        x = self.forward_features(x)  
+        print(f"Total time spent in forward_features: {time.time() - feature_time}")
+
+        head_time = time.time()
         x = self.head(x)
+        print(f"Total time spent in head: {time.time() - head_time}")
         return x
 
 
@@ -707,7 +674,7 @@ def _conv_filter(state_dict, patch_size=16):
 @register_model
 def segvit_tiny(pretrained=False, **kwargs):
     model = SegVisionTransformer(
-        embed_dim=192, num_heads=3, depth=12, mlp_ratio=3, **kwargs
+        embed_dim=192, num_heads=3, depth=11, mlp_ratio=3, **kwargs
     )
     model.default_cfg = _cfg()
 
@@ -976,3 +943,169 @@ def vit_base_resnet50d_224(pretrained=False, **kwargs):
     )
     model.default_cfg = default_cfgs["vit_base_resnet50d_224"]
     return model
+
+
+# class SegmentEmbed(nn.Module):
+#     """Image to Super-pixel patch embeddings. Converted to frequency domain. Merge number of segments for batched execution. Get positional embeddings
+#     TODO: Get PCA basis vectors from DataLoader.
+#     """
+
+#     def __init__(
+#         self,
+#         segmentation="felz",
+#         grayscale=True,
+#         n_points=64,
+#         num_tokens=196,
+#         embed_dim=768,
+#     ):
+#         super().__init__()
+#         self.segmentation = (
+#             segmentation  # segmentation method to use from skimage.semgentation
+#         )
+#         self.grayscale = grayscale  # if FT should be taken with grayscale image, or RGB
+#         self.n_points = n_points  # N-point in FFT
+#         self.num_tokens = num_tokens  # number of segments to create from image
+
+#         self.proj_freq = nn.Linear(self.n_points * self.n_points * 2, embed_dim, device='cuda')
+#         self.proj_pos = nn.Linear(5, embed_dim, device='cuda')
+
+#     def forward(self, x):
+#         B, C, H, W = x.shape
+#         x = x.permute(0, 2, 3, 1) # Change channels to be last dimension
+#         # print(f"Batch shape is: {x.shape}")
+#         x = x.cpu().numpy()
+
+#         # Iterate over each image in batch and get segmentation mask
+#         start_time = time.time()
+#         save_mask = np.zeros((B, H, W))
+#         for i, img in enumerate(x):
+#             cp_img = np.squeeze(img)
+
+#             # TODO: make all parameters set by user
+#             if self.segmentation == "felz":
+#                 segmentation_mask = skimage.segmentation.felzenszwalb(
+#                     cp_img, scale=100, sigma=0.5, min_size=150
+#                 ) 
+#                 save_mask[i, :, :] = segmentation_mask
+
+#             elif self.segmentation == "slic":
+#                 segmentation_mask = skimage.segmentation.slic(cp_img, n_segments=196, start_label=0)
+#                 save_mask[i, :, :] = segmentation_mask
+#             else:
+#                 raise ValueError(f"segmentation was set to an invalid method")
+
+#         print(f"Time to get segmentation masks: {time.time() - start_time}")
+
+#         # Globally consistent number of tokens in image
+#         if self.num_tokens > 0:
+#             # print("Using global consistency for number of tokens")
+#             num_tokens = self.num_tokens
+#         # Batch-consistent number of tokens in image
+#         else:
+#             # print("Using batch consistency for number of tokens")
+#             # Flatten save_mask. Then find max segment value for each image. Take minimum across all images. Add 1 because of zero-based indexing
+#             num_tokens = int(np.min(np.max(save_mask.reshape(save_mask.shape[0], -1), axis=1)) + 1)  
+
+#         # print(f"Number of tokens that will be enforced is: {num_tokens}")
+#         #### Merge segments to match consistency for batched execution ####
+#         start_time = time.time()
+#         for i, img in enumerate(x):
+#             seg_mask = save_mask[i]
+
+#             num_segs = len(np.unique(seg_mask))
+#             # print(f"Image: {i} | Segments: {num_segs}")
+#             assert (
+#                 num_segs >= num_tokens
+#             ), f"Number of segments in image ({num_segs}) is less than the number of tokens required ({num_tokens}). Please lower the number of tokens or increase segmentation granularity."
+
+#             while num_segs > num_tokens:
+#                 # Find smallest segment
+#                 unique_values, counts = np.unique(seg_mask.flatten(), return_counts=True)
+#                 smallest_seg = unique_values[np.argmin(counts)]
+
+#                 # Find neighbors. Only check for smallest_seg
+#                 vs_right = np.vstack([seg_mask[:,:-1].ravel(), seg_mask[:,1:].ravel()])
+#                 vs_below = np.vstack([seg_mask[:-1,:].ravel(), seg_mask[1:,:].ravel()])
+#                 bneighbors = np.unique(np.hstack([vs_right, vs_below]), axis=1)
+
+#                 include_mask = np.any(bneighbors == smallest_seg, axis=0) # Create a boolean mask indicating columns that include the specific value
+#                 filtered_bneighbors = bneighbors[:, include_mask] # Extract the columns that include the specific value
+
+#                 # Get unique IDs and remove smallest segment ID
+#                 filtered_bneighbors = np.unique(filtered_bneighbors.flatten())
+#                 filtered_bneighbors = filtered_bneighbors[filtered_bneighbors != smallest_seg]
+
+#                 # Pick a segment and merge
+#                 merge_seg = np.random.choice(filtered_bneighbors) # randomly pick a segment
+#                 seg_mask[seg_mask == smallest_seg] = merge_seg # merge them
+
+#                 # Update termination condition
+#                 num_segs = len(np.unique(seg_mask.flatten()))
+            
+#             # Save
+#             seg_mask = (skimage.segmentation.relabel_sequential(seg_mask.astype(int)))[0]
+#             save_mask[i] = seg_mask
+
+#         print(f"Time to merge segments: {time.time() - start_time}")
+#         # Create save tensors based on num_tokens
+#         seg_out = torch.zeros((B, num_tokens, self.n_points * self.n_points * 2), device='cuda')
+#         pos_out = torch.zeros((B, num_tokens, 5), device='cuda')  # (height, width), (location x,y), area all from [0, 1] -- NOTE: Assuming static positional embeddings for now
+
+#         # For each segment in each image, get FT and positional embedding
+#         start_time = time.time()
+#         for j, img in enumerate(x):
+#             # print(j)
+#             unique_integers = np.unique(save_mask[j], return_counts=True)
+#             # print(unique_integers)
+
+#             for i, unique_int in enumerate(unique_integers[0]):
+#                     # TODO: experiment with taking FT of each channel differently vs. only taking grayscale) -- add argument to specify
+#                     # Get each segment and take FT. Unroll and save
+#                     binary_mask = (save_mask[j] == unique_int)
+#                     segmented_img = img * np.expand_dims(binary_mask, axis=-1)
+
+#                     # Convert to grayscale if specified and image is RGB
+#                     if self.grayscale:
+#                         cp_img = cv2.cvtColor(segmented_img, cv2.COLOR_BGR2GRAY)
+
+#                     # Take FT
+#                     fourier_transform = np.fft.fft2(cp_img, s=(self.n_points, self.n_points)) #TODO: Change to rfft2 and reduce dims to optimize (as input is always real)
+#                     # fourier_transform_shifted = np.fft.fftshift(fourier_transform)
+
+#                     # Extract magnitude and phase information
+#                     magnitude = np.abs(fourier_transform)
+#                     phase = np.angle(fourier_transform)
+
+#                     # Save FT info
+#                     to_save = np.stack((magnitude, phase)).flatten(order="F")                    
+#                     assert to_save.shape[0] == seg_out.shape[2]
+#                     seg_out[j, i, :] = torch.from_numpy(to_save).to('cuda')  # TODO: make this device (how does this work with DataParallel)
+
+#                     #### Get position embedding info (static) TODO: Verify implementation ####
+#                     # Area
+#                     area = np.sum(binary_mask) / binary_mask.size
+
+#                     # Center (Average)
+#                     center_x = np.average(np.where(binary_mask)[1]) / binary_mask.shape[1]
+#                     center_y = np.average(np.where(binary_mask)[0]) / binary_mask.shape[0]
+
+#                     # Width/Height
+#                     # print(np.where(binary_mask)[1].shape)
+#                     width = (np.max(np.where(binary_mask)[1]) - np.min(np.where(binary_mask)[1])) / binary_mask.shape[1]
+#                     height = (np.max(np.where(binary_mask)[0]) - np.min(np.where(binary_mask)[0])) / binary_mask.shape[0]
+
+#                     # print(area, area.shape)
+#                     # print(center_x, center_x.shape)
+#                     # print(center_y, center_y.shape)
+#                     # print(width, width.shape)
+#                     # print(height, height.shape)
+
+#                     # Store in array and convert to tensor on device
+#                     pos_save = torch.from_numpy(np.array([area, center_x, center_y, width, height])) #TODO: make this device (how does this work with DataParallel)
+#                     pos_out[j, i, :] = pos_save.to('cuda')
+
+#         print(f"Time to get FT and positional embeds: {time.time() - start_time}")
+#         # Add a linear proj layer
+#         out = self.proj_freq(seg_out) + self.proj_pos(pos_out)
+
+#         return out
