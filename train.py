@@ -224,6 +224,7 @@ def get_args_parser():
     )
 
     # Augmentation parameters
+    parser.add_argument('--zero-augments', type=bool, default=False)
     parser.add_argument(
         "--color-jitter",
         type=float,

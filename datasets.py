@@ -63,6 +63,7 @@ class INatDataset(ImageFolder):
 
 def build_dataset(is_train, args):
     transform = build_transform(is_train, args)
+    print(transform)
 
     if args.data_set == "CIFAR":
         dataset = datasets.CIFAR100(args.data_path, train=is_train, transform=transform, download=True)
@@ -95,7 +96,7 @@ def build_dataset(is_train, args):
 
 def build_transform(is_train, args):
     resize_im = args.input_size > 32
-    if is_train:
+    if is_train and (not args.zero_augments):
         # this should always dispatch to transforms_imagenet_train
         transform = create_transform(
             input_size=args.input_size,
