@@ -25,6 +25,7 @@ import torch.nn as nn
 import cv2
 import numpy as np
 import skimage
+from fast_slic.avx2 import SlicAvx2
 from functools import partial
 import time
 
@@ -292,6 +293,11 @@ class SegmentEmbed(nn.Module):
             elif self.segmentation == "slic":
                 segmentation_mask = skimage.segmentation.slic(cp_img, n_segments=self.num_tokens, start_label=0)
                 save_mask[i, :, :] = segmentation_mask
+
+            elif self.segmentation=="fast-slic":
+                slic = SlicAvx2(num_components=self.num_tokens, min_size_factor=0)
+                segmentation_mask = slic.iterate(cp_img)
+                save_mask[i, :, :] = segmentation_mask
             else:
                 raise ValueError(f"segmentation was set to an invalid method")
 
@@ -306,11 +312,12 @@ class SegmentEmbed(nn.Module):
         for j, img in enumerate(x):
 
             unique_integers = np.unique(save_mask[j], return_counts=True)
+            if self.segmentation == "fast-slic": assert len(unique_integers[0] == self.num_tokens) # Sanity check
             
             # Iterate over number of tokens we want
             for i in range(self.num_tokens):                    
                     # If token ID not in mask, we must set to [PAD]
-                    if i not in unique_integers[0]:
+                    if (i not in unique_integers[0]) and (self.segmentation is not "fast-slic"):
                         seg_out[j, i, :] = self.pad_embed_freq
                         pos_out[j, i, :] = self.pad_embed_pos
 
