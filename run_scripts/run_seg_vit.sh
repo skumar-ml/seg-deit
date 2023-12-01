@@ -1,0 +1,3 @@
+CUDA_VISIBLE_DEVICES=0,1,2 nohup python -m torch.distributed.launch --nproc_per_node=3 --use_env train_vit.py --model segvit_tiny --batch-size 256 \
+    --zero-augments True --no-repeated-aug --mixup 0 --cutmix 0 --data-set CIFAR-SEG --data-path /home/sk138/data/cifar-100-python-segmented/cifar-196-64/ --output_dir /home/sk138/seg_deit/saves/ \
+    > /home/sk138/seg_deit/logs/segvit_tiny_cifar100.txt 2>&1

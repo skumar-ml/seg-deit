@@ -2,6 +2,8 @@
 # All rights reserved.
 import os
 import json
+import torch
+import numpy as np
 
 from torchvision import datasets, transforms
 from torchvision.datasets.folder import ImageFolder, default_loader
@@ -60,6 +62,10 @@ class INatDataset(ImageFolder):
 
     # __getitem__ and __len__ inherited from ImageFolder
 
+def segmented_loader(file_path):
+    loaded = np.load(file_path)
+    return torch.from_numpy(loaded['data'])
+
 
 def build_dataset(is_train, args):
     transform = build_transform(is_train, args)
@@ -68,27 +74,19 @@ def build_dataset(is_train, args):
     if args.data_set == "CIFAR":
         dataset = datasets.CIFAR100(args.data_path, train=is_train, transform=transform, download=True)
         nb_classes = 100
+    elif args.data_set == 'CIFAR-SEG':
+        root = os.path.join(args.data_path, 'train' if is_train else 'test')
+        dataset = datasets.DatasetFolder(root, loader=segmented_loader, extensions='npz')
+        nb_classes = 100
     elif args.data_set == "IMNET":
         root = os.path.join(args.data_path, "train" if is_train else "val")
         dataset = datasets.ImageFolder(root, transform=transform)
         nb_classes = 1000
     elif args.data_set == "INAT":
-        dataset = INatDataset(
-            args.data_path,
-            train=is_train,
-            year=2018,
-            category=args.inat_category,
-            transform=transform,
-        )
+        dataset = INatDataset(args.data_path, train=is_train, year=2018, category=args.inat_category, transform=transform,)
         nb_classes = dataset.nb_classes
     elif args.data_set == "INAT19":
-        dataset = INatDataset(
-            args.data_path,
-            train=is_train,
-            year=2019,
-            category=args.inat_category,
-            transform=transform,
-        )
+        dataset = INatDataset(args.data_path, train=is_train, year=2019, category=args.inat_category, transform=transform,)
         nb_classes = dataset.nb_classes
 
     return dataset, nb_classes
@@ -107,6 +105,7 @@ def build_transform(is_train, args):
             re_prob=args.reprob,
             re_mode=args.remode,
             re_count=args.recount,
+            no_aug=args.zero_augments
         )
         if not resize_im:
             # replace RandomResizedCropAndInterpolation with

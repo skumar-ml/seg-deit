@@ -574,6 +574,8 @@ def main(args):
             args=args,
         )
 
+        break
+
         lr_scheduler.step(epoch)
         if args.output_dir:
             checkpoint_paths = [output_dir / "checkpoint.pth"]
