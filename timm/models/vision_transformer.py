@@ -446,7 +446,7 @@ class SegVisionTransformer(nn.Module):
         # self.patch_embed = SegmentEmbed(segmentation=segmentation, grayscale=grayscale, n_points=n_points, num_tokens=num_tokens, embed_dim=embed_dim, pad_embed_freq=self.pad_embed_freq, pad_embed_pos=self.pad_embed_pos)
 
         # Project the input data to the required space
-        self.proj_freq = nn.Linear(n_points * n_points * 2, embed_dim)
+        self.proj_freq = nn.Linear(int(n_points * (n_points/2 + 1) * 2), embed_dim)
         self.proj_pos = nn.Linear(5, embed_dim)
 
         dpr = [
@@ -507,34 +507,24 @@ class SegVisionTransformer(nn.Module):
         
     def forward_features(self, x):
         B = x.shape[0]
-        print(x.shape)
-        print(torch.sum(torch.isnan(x)).item())
 
         # Separate out positional and segmented-ft info. Pass through respective Linear layers and add
         seg_out = x[:, :, :-5]
         pos_out = x[:, :, -5:]
 
-        print(torch.mean(seg_out))
-        print(torch.max)
+        # print(f"Mean of seg_out {torch.mean(seg_out)}")
+        # print(f"Max of seg_out {torch.max(seg_out)}")
 
-        print(torch.sum(torch.isnan()).item())
         x = self.proj_freq(seg_out) + self.proj_pos(pos_out)
-        print(x.shape)
-        print(torch.sum(torch.isnan(x)).item())
 
         cls_tokens = self.cls_token.expand(B, -1, -1)  # stole cls_tokens impl from Phil Wang, thanks
         x = torch.cat((cls_tokens, x), dim=1)
-        print(x.shape)
-        print(torch.sum(torch.isnan(x)).item())
 
         x = self.pos_drop(x)
-        print(x.shape)
-        print(torch.sum(torch.isnan(x)).item())
 
         for blk in self.blocks:
             x = blk(x)
 
-        print(x.shape)
         x = self.norm(x)
         return x[:, 0]
 
