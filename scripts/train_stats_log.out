@@ -1,0 +1,17 @@
+Compose(
+    Resize(size=224, interpolation=bilinear, max_size=None, antialias=warn)
+    CenterCrop(size=(224, 224))
+    ToTensor()
+    Normalize(mean=tensor([0.4850, 0.4560, 0.4060]), std=tensor([0.2290, 0.2240, 0.2250]))
+)
+Compose(
+    Resize(size=256, interpolation=bilinear, max_size=None, antialias=warn)
+    CenterCrop(size=(224, 224))
+    ToTensor()
+    Normalize(mean=tensor([0.4850, 0.4560, 0.4060]), std=tensor([0.2290, 0.2240, 0.2250]))
+)
+Files already downloaded and verified
+Files already downloaded and verified
+0it [00:00, ?it/s]1it [00:12, 12.48s/it]2it [00:17,  7.83s/it]3it [00:21,  6.23s/it]4it [00:24,  4.99s/it]5it [00:26,  3.91s/it]6it [00:28,  3.29s/it]7it [00:30,  2.86s/it]8it [00:32,  2.58s/it]9it [00:34,  2.40s/it]10it [00:36,  2.27s/it]11it [00:38,  2.19s/it]12it [00:40,  2.13s/it]13it [00:42,  2.08s/it]14it [00:44,  2.06s/it]15it [00:46,  2.04s/it]16it [00:48,  2.03s/it]17it [00:50,  2.03s/it]18it [00:52,  2.02s/it]19it [00:54,  2.01s/it]20it [00:56,  2.01s/it]21it [00:58,  2.00s/it]22it [01:00,  2.00s/it]23it [01:02,  2.00s/it]24it [01:04,  2.00s/it]25it [01:06,  2.01s/it]25it [01:06,  2.67s/it]
+tensor([ 7.4219e+10,  5.6563e+14, -3.9591e+03,  1.5014e+04])
+tensor([ 1.8303e+01,  3.7303e+02, -9.7634e-07,  1.9242e-03])

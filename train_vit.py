@@ -36,11 +36,13 @@ def get_args_parser():
     parser.add_argument('--bce-loss', action='store_true')
     parser.add_argument('--unscale-lr', action='store_true')
 
-        # Segmentation parameters
+    # Segmentation parameters
     parser.add_argument("--segmentation", default="fast_slic", type=str, help='segmentation method to use. Options are ["felz", "slic", "quickshift", "watershed"]',)
     parser.add_argument("--grayscale", default=True, type=bool, help="If img should convert to grayscale before taking FT. Else, FT of RGB channels taken separetely and concat",)
     parser.add_argument("--n_points", default=64, type=int, help="Number of points to use in N-point FFT",)
     parser.add_argument("--num_tokens", default=196, type=int, help="Number of segments in the image (tokens sent to transformer). If -1, use batch consistency",)
+    parser.add_argument("--bag_of_words", default=False, type=bool, help="If we are doing bag of words of freq as our fixed-length transformation",)
+    parser.add_argument("--frequency", type=bool, default=False)
 
     # Model parameters
     parser.add_argument('--model', default='deit_base_patch16_224', type=str, metavar='MODEL',
@@ -274,7 +276,10 @@ def main(args):
         drop_rate=args.drop,
         drop_path_rate=args.drop_path,
         drop_block_rate=None,
-        img_size=args.input_size
+        img_size=args.input_size,
+        n_points=args.n_points,
+        bag_of_words=args.bag_of_words,
+        frequency=args.frequency
     )
                     
     if args.finetune:

@@ -7,6 +7,7 @@ import os
 import shutil
 import math
 from tqdm import tqdm
+import cv2
 
 def process_segment(x, n_segments=196):
     B, C, H, W = x.shape
@@ -24,10 +25,17 @@ def process_segment(x, n_segments=196):
         cp_img = np.squeeze(img)
 
         # slic = Slic(num_components=n_segments, min_size_factor=0)
-        slic = SlicAvx2(num_components=n_segments, min_size_factor=0)
-        segmentation_mask = slic.iterate(cp_img)
+        # slic = SlicAvx2(num_components=n_segments, min_size_factor=0)
+        # segmentation_mask = slic.iterate(cp_img)
         # print(i, len(np.unique(segmentation_mask)))
         # assert len(np.unique(segmentation_mask)) == n_segments, f"Got {len(np.unique(segmentation_mask))} segments from SLIC, but expected {n_segments}"
+
+        segmentation_mask = np.zeros((224, 224))
+
+        for w in range(0, 224, 16):
+            for j in range(0, 224, 16):
+                segmentation_mask[w:w+16, j:j+16] = int(w/16 + (j/16)*14)
+
         save_mask[i, :, :] = torch.from_numpy(segmentation_mask).to(DEVICE)
         
     return save_mask
@@ -55,32 +63,30 @@ def process_ft(x, save_mask, n_segments=196, n_points=64, grayscale=True):
         binary_mask = (save_mask == i)
         # print(binary_mask.shape)
 
-        # Get segment data for all images in batch
-        segmented_imgs = binary_mask * x
+        for j, image_mask in enumerate(binary_mask):
+            image_mask = np.uint8(image_mask.cpu().numpy())
+            coords = cv2.findNonZero(image_mask)
+            bbox_x, bbox_y, bbox_w, bbox_h = cv2.boundingRect(coords)
+            cropped_image = x[j, bbox_y:bbox_y+bbox_h, bbox_x:bbox_x+bbox_w]
 
-        # Take FT and separate magnitude and phase info
-        # fourier_transform = torch.fft.fft2(segmented_imgs, s=(n_points, n_points))
-        fourier_transform = torch.fft.rfft2(segmented_imgs, s=(n_points, n_points))
-        magnitude = torch.abs(fourier_transform) 
-        phase = torch.angle(fourier_transform) 
+            # Take FT and separate magnitude and phase info
+            # fourier_transform = torch.fft.fft2(segmented_imgs, s=(n_points, n_points))
+            fourier_transform = torch.fft.rfft2(cropped_image, s=(n_points, n_points))
+            # print(fourier_transform.shape)
+            magnitude = torch.abs(fourier_transform) 
+            phase = torch.angle(fourier_transform) 
 
-        assert torch.sum(torch.isnan(magnitude)).item() == 0, "NaN element in the magnitude before normalization"
+            assert torch.sum(torch.isnan(magnitude)).item() == 0, "NaN element in the magnitude before normalization"
 
-        # Normalize scales
-        # magnitude = magnitude / (1 if torch.max(magnitude)==0 else torch.max(magnitude))  # [0 1] -- divide by 1 if max is already 0.
-        phase = phase / torch.tensor(math.pi) # [-1 1]
-
-        # print(torch.max(magnitude))
-        # print(torch.max(phase))
-        # print(torch.min(phase))
-
-        assert torch.sum(torch.isnan(magnitude)).item() == 0, "NaN element in the magnitude after normalization"
+            # Normalize scales & standardize data according to dataset statistics
+            # magnitude = magnitude / (1 if torch.max(magnitude)==0 else torch.max(magnitude))  # [0 1] -- divide by 1 if max is already 0.
+            phase = phase / torch.tensor(math.pi) # [-1 1]
         
-        magnitude_sum += torch.sum(magnitude)
-        magnitude_sum_2 += torch.sum(magnitude ** 2)
+            magnitude_sum += torch.sum(magnitude)
+            magnitude_sum_2 += torch.sum(torch.square(magnitude))
 
-        phase_sum = torch.sum(phase)
-        phase_sum_2 = torch.sum(phase**2)
+            phase_sum = torch.sum(phase)
+            phase_sum_2 = torch.sum(torch.square(phase))
 
         return magnitude_sum, magnitude_sum_2, phase_sum, phase_sum_2
 
@@ -93,7 +99,7 @@ num_workers = 10
 n_segments=196
 pin_mem = True
 n_points=64
-batch_size=1000
+batch_size=2000
 DEVICE='cuda:0'
 
 # Transforms
@@ -143,6 +149,7 @@ phase_sum_2_tot = 0
 # Iterate over dataloader
 for i, (inputs, labels) in tqdm(enumerate(use)):
     inputs = inputs.to(DEVICE)
+    inputs = inputs*255
     inputs = inputs.to(torch.uint8)
 
     # Segment image, take FT, and find pos embed. 
@@ -160,4 +167,16 @@ save_vals = torch.Tensor([magnitude_sum_tot, magnitude_sum_2_tot, phase_sum_tot,
 print(save_vals)
 torch.save(save_vals, f'{data_type}_sums.pt')
 
+count = (10000 * 192 * 64 * 33)
+mag_mean = magnitude_sum_tot / count
+mag_var  = (magnitude_sum_2_tot / count) - (mag_mean ** 2)
+mag_std  = torch.sqrt(mag_var)
+
+phase_mean = phase_sum_tot / count
+phase_var  = (phase_sum_2_tot / count) - (phase_mean ** 2)
+phase_std  = torch.sqrt(phase_var)
+
+stat_vals = torch.Tensor([mag_mean, mag_std, phase_mean, phase_std])
+print(stat_vals)
+torch.save(stat_vals, f'{data_type}_stats.pt')
     

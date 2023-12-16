@@ -59,12 +59,23 @@ class DistilledVisionTransformer(VisionTransformer):
             return (x + x_dist) / 2
 
 
-@register_model
+
 # TODO: Check this is correct
 @register_model
-def segvit_tiny(pretrained=False, **kwargs):
+def segvit_mini(pretrained=False, **kwargs):
     model = SegVisionTransformer(
-        embed_dim=192, num_heads=3, depth=11, mlp_ratio=4, qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs
+        embed_dim=96, num_heads=3, depth=6, mlp_ratio=4, qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs
+    )
+    model.default_cfg = _cfg()
+
+    return model
+
+@register_model
+def segvit_tiny(pretrained=False, **kwargs):
+    for key, value in kwargs.items():
+        print(f"{key}: {value}")
+    model = SegVisionTransformer(
+        embed_dim=192, num_heads=3, depth=12, mlp_ratio=4, qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs
     )
     model.default_cfg = _cfg()
 
@@ -74,7 +85,7 @@ def segvit_tiny(pretrained=False, **kwargs):
 @register_model
 def segvit_small(pretrained=False, **kwargs):
     model = SegVisionTransformer(
-        embed_dim=384, num_heads=6, depth=12, mlp_ratio=3, **kwargs
+        embed_dim=384, num_heads=6, depth=12, mlp_ratio=4, qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs
     )
     model.default_cfg = _cfg()
 

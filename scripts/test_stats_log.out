@@ -1,0 +1,38 @@
+nohup: ignoring input
+Compose(
+    Resize(size=224, interpolation=bilinear, max_size=None, antialias=warn)
+    CenterCrop(size=(224, 224))
+    ToTensor()
+    Normalize(mean=tensor([0.4850, 0.4560, 0.4060]), std=tensor([0.2290, 0.2240, 0.2250]))
+)
+Compose(
+    Resize(size=256, interpolation=bilinear, max_size=None, antialias=warn)
+    CenterCrop(size=(224, 224))
+    ToTensor()
+    Normalize(mean=tensor([0.4850, 0.4560, 0.4060]), std=tensor([0.2290, 0.2240, 0.2250]))
+)
+Files already downloaded and verified
+Files already downloaded and verified
+0it [00:00, ?it/s]1it [00:09,  9.58s/it]2it [00:14,  6.75s/it]3it [00:18,  5.71s/it]4it [00:23,  5.31s/it]5it [00:28,  5.06s/it]6it [00:32,  4.96s/it]7it [00:37,  4.89s/it]8it [00:42,  4.82s/it]9it [00:47,  4.79s/it]10it [00:51,  4.77s/it]10it [00:51,  5.20s/it]
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+torch.Size([1000, 64, 33])
+tensor([ 6.3759e+09,  9.0042e+13, -7.7493e+05,  3.2780e+06])
+tensor([ 2.2203e+04,  1.4901e+02, -1.9110e-04,  8.0835e-04])
