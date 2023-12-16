@@ -13,6 +13,8 @@ All training bash scripts are located in `run_scripts/`. `run_seg_vit.sh` runs t
 
 The main training script is `train_vit.py`
 
+All training logs showing the results can be found in the `logs/` folder. The Seg-ViT Color Histogram logs are `segvit_tiny_BoW_seg.txt`, `segvit_tiny_BoW_seg2.txt`, and `segvit_tiny_BoW_rect.txt`. The FFT results are stored in `segvit_mini_rfft_rect_cropped.txt`, `segvit_mini_rfft_seg_cropped.txt`.
+
 # My Code
 This repo extends [Meta's Data Efficient Transformer repo](https://github.com/facebookresearch/deit). Below are my unique contributions:
 
